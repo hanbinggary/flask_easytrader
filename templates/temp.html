@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+ </head>
+ <body>
+  <table>
+  <tr>
+	<th>代码</th>
+	<th>名称</th>
+	<th>流通市值</th>
+	<th>现价</th>
+	<th>卖一</th>
+	<th>买一</th>
+	<th>损耗</th>
+	<th>上市天数</th>
+	<th>PE</th>
+	<th>市值差</th>
+  </tr>
+  <tr>
+	<td>{{value.code}}</td>
+	<td>{{value.name}}</td>
+	<td>{{value['流通市值']}}</td>
+	<td>{{value.now}}</td>
+	<td>{{value.ask1 + '' + value.ask1_volume}}</td>
+	<td>{{value.bid1 + '' + value.bid1_volume}}</td>
+	<td>{{(-1 + flot(value.ask1)/flot(value.bid1))*100}}</td>
+	<td>-</td>
+	<td>{{value.PE}}</td>
+	<td>-</td>
+  </tr>
+  </table>
+ </body>
+</html>

@@ -1,3 +1,52 @@
 <!doctype html>
+<!--
 <title>Hello from Flask</title>
-<p>	{{stockinfo}}</p>
+-->
+<p>最小流通市值</p>
+  <table border='1'>
+  <tr>
+	<th>NO</th>
+	<th>代码</th>
+	<th>名称</th>
+	<th>流通市值</th>
+	<th>time</th>
+  </tr>
+  {% set i = 0 %}
+  {% for key,value in stockinfo_sort %}
+  {% set i=i+1 %}
+      <tr>
+    	<td>{{i}}</td>
+    	<td>{{value.code}}</td>
+    	<td>{{value.name}}</td>
+    	<td>{{value['流通市值']}}</td>
+    	<td>{{value.datetime}}</td>
+      </tr>
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+</table>  
+<p>涨停板</p>
+<table border='1'>
+  <tr>
+	<th>NO</th>
+	<th>代码</th>
+	<th>名称</th>
+	<th>流通市值</th>
+	<th>time</th>
+  </tr>
+  {% set i = 0 %}
+  {% for key,value in stockinfo_zhangting.items() %}
+  {% set i=i+1 %}
+      <tr>
+    	<td>{{i}}</td>
+    	<td>{{value.code}}</td>
+    	<td>{{value.name}}</td>
+    	<td>{{value['流通市值']}}</td>
+    	<td>-</td>
+    	<td>{{value.datetime}}</td>
+      </tr>
+  {% else %}
+    <tr>data none</tr>
+  {% endfor %}
+
+</table>

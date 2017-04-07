@@ -1,37 +1,50 @@
 <!doctype html>
 <title>Hello from Flask</title>
 {% if name %}
-  <h1>Hello {{ name }}!</h1>
+  <p>Hello {{ name }}!</p>
 {% else %}
-  <h1>Hello World!</h1>
+  <p>Hello World!</p>
 {% endif %}
 <dd><input type='button' value='post1' onclick='getstockinfo();' />
-<form action='/post' method=post>
+<!--form action='/post' method=post>
 <dd><input type='text' name='stockno' id='stockno' value='sz000001'>
 <dd><input type=submit value=Share>
-</form>
+</form-->
+<div id='stock_info_error'></div>
 <div id='stock_info'></div>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
 
-//ref = setInterval(getstockinfo,5000);
+//ref = setInterval(getstockinfo,10000);
 
 function getstockinfo () {
 	var stockno = $("#stockno").val();
 	//alert(stockno);
 	$.ajax({
 		type: "GET",
-		url: "/post_stock/" + stockno ,
+		url: "/qq/" + stockno ,
 		data: {'stockno':stockno},
 		dataType: "text",
 		success: function(msg){
-				//alert(msg);
-				$('#stock_info').append(msg);
-			},
+                $('#stock_info').text("");
+                $('#stock_info_error').text("");
+                $('#stock_info').append(msg);
+                //edit_view(jQuery.parseJSON(msg));
+		},
 		error:function(){
-			alert("error");
+                $('#stock_info_error').text("error");
+                //$('#stock_info_error').append(msg);
 			return false;
 			},
 		});
+
+function edit_view(jsonobj){
+    $('#stock_info').text("");
+    //$('#stock_info').append(jsonobj.stock['000001'].toJSONString());
+    $.each(jsonobj.stock, function(i,val){      
+        //alert(val.toJSONString());
+        $('#stock_info').append(val.name + val.now);
+    });
+}
 }
 </script>
