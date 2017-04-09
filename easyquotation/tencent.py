@@ -21,6 +21,14 @@ class Tencent(BaseQuotation):
             if len(stock) <= 49:
                 continue
             stock_code = self.grep_stock_code.search(stock[0]).group() if prefix else stock[2]
+
+            #css设定用
+            #损耗大于0.2%时，标红
+            sunhao = round((float(stock[19])/float(stock[9])-1)*100,2) if float(stock[9]) > 0.0 else 0.0
+            sunhao_css = 'font-green-bold' if sunhao >= 0.2 else ''
+
+            #上市天数<50时，标红加粗
+
             #stock_dict[stock_code] = {
             temp_item = {
                 'name': stock[1],
@@ -51,11 +59,13 @@ class Tencent(BaseQuotation):
                 'ask4_volume': int(stock[26]) * 100,
                 'ask5': float(stock[27]),
                 'ask5_volume': int(stock[28]) * 100,
-                '损耗': round((float(stock[19])/float(stock[9])-1)*100,2) if float(stock[9]) > 0.0 else None,
+                '损耗': str(sunhao) + '%',
+                'sunhao_css': sunhao_css,
                 '最近逐笔成交': stock[29],  # 换成英文
                 'datetime': str(datetime.strptime(stock[30], '%Y%m%d%H%M%S')),
                 '涨跌': float(stock[31]),  # 换成英文
-                '涨跌(%)': float(stock[32]),  # 换成英文
+                '涨跌(%)': str(float(stock[32])) + '%',  # 换成英文
+                '涨跌_css': 'font-red' if float(stock[32]) > 0.0 else 'font-green',  # 涨红跌绿
                 'high': float(stock[33]),
                 'low': float(stock[34]),
                 '价格/成交量(手)/成交额': stock[35],  # 换成英文
@@ -67,10 +77,15 @@ class Tencent(BaseQuotation):
                 'high_2': float(stock[41]),  # 意义不明
                 'low_2': float(stock[42]),  # 意义不明
                 '振幅': float(stock[43]),  # 换成英文
-                '流通市值': float(stock[44]) if stock[44] != '' else None,  # 换成英文
+                '流通市值': float(stock[44]) if stock[44] != '' else 0.0,  # 换成英文
                 'cha': 0,  # 市值差
+                'cha_sunhao': 0,  # 去损耗市值差
+                'ipo_date_num': 0,  # 上市天数
+                'ipo_date_num_css': 0,  # 上市天数
                 'ask1_num': round(float(stock[19])*int(stock[20])/100,2),  # 卖一委托额(万)
+                'ask1_num_css': 'font-red' if round(float(stock[19])*int(stock[20])/100,2) <= 1 else '',  # 卖一委托额(万)css
                 'bid1_num': round(float(stock[9])*int(stock[10])/100,2),  # 买一委托额(万)
+                'bid1_num_css': 'font-red' if round(float(stock[9])*int(stock[10])/100,2) <=1 else '',  # 买一委托额(万)css
                 '总市值': float(stock[45]) if stock[44] != '' else None,  # 换成英文
                 'PB': float(stock[46]),
                 '涨停价': float(stock[47]),  # 换成英文

@@ -3,90 +3,93 @@
 <title>Hello from Flask</title>
 -->
 <p>最小流通市值</p>
-  <table border='1'>
-  <tr>
-	<th>NO</th>
-	<th>代码</th>
-	<th>名称</th>
-	<th>流通市值</th>
-	<th>市值差</th>
-	<th>现价</th>
-	<th>涨跌</th>
-	<th>卖一</th>
-	<th>额(万)</th>
-	<th>买一</th>
-	<th>额(万)</th>
-	<th>损耗</th>
-	<th>上市天数</th>
-	<th>PE</th>
-	<th>PB</th>
-	<th>time</th>
+  <table border='1' style='border-collapse:collapse'>
+  <tr class='table-title'>
+    <th>NO</th>
+    <th>代码</th>
+    <th>名称</th>
+    <th>流通市值</th>
+    <th>市值差</th>
+    <th>去损差</th>
+    <th>损耗</th>
+    <th>ipo天</th>
+    <th>卖一</th>
+    <th>额(万)</th>
+    <th>买一</th>
+    <th>额(万)</th>
+    <th>现价</th>
+    <th>涨跌</th>
+    <th>PE</th>
+    <th>PB</th>
+    <th>time</th>
   </tr>
   {% set i = 0 %}
+  {% set new_ipo_class = '' %}
   {% for key,value in stockinfo_sort %}
   {% set i=i+1 %}
-      <tr>
-    	<td>{{i}}</td>
-    	<td>{{value.code}}</td>
-    	<td>{{value.name}}</td>
-    	<td>{{value['流通市值']}}</td>
-    	<td>{{value['cha']}}</td>
-    	<td>{{value.now}}</td>
-    	<td>{{value['涨跌(%)']}}</td>
-    	<td>{{value.ask1}}</td>
-    	<td>{{value.ask1_num}}</td>
-    	<td>{{value.bid1}}</td>
-    	<td>{{value.bid1_num}}</td>
-    	<td>{{value['损耗']}}</td>
-    	<td>-</td>
-    	<td>{{value.PE}}</td>
-    	<td>{{value.PB}}</td>
-    	<td>{{value.datetime}}</td>
+      <tr class='double_row_bkcolor{{i%2}}'>
+        <td>{{i}}</td>
+        <td>{{value.code}}</td>
+        <td align='justify'>{{value.name}}</td>
+        <td>{{value['流通市值']}}</td>
+        <td>{{value['cha']}}</td>
+        <td class='font-blue'>{{value['cha_sunhao']}}</td>
+        <td class='{{value.sunhao_css}}'>{{value['损耗']}}</td>
+        <td class='{{value.ipo_date_num_css}}'>{{value.ipo_date_num}}</td>
+        <td>{{value.ask1}}</td>
+        <td class='{{value.ask1_num_css}}'>{{value.ask1_num}}</td>
+        <td>{{value.bid1}}</td>
+        <td class='{{value.bid1_num_css}}'>{{value.bid1_num}}</td>
+        <td>{{value.now}}</td>
+        <td class="{{value['涨跌_css']}}">{{value['涨跌(%)']}}</td>
+        <td>{{value.PE}}</td>
+        <td>{{value.PB}}</td>
+        <td>{{value.datetime}}</td>
       </tr>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
 </table>  
 <p>涨停板</p>
-<table border='1'>
-  <tr>
-	<th>NO</th>
-	<th>代码</th>
-	<th>名称</th>
-	<th>流通市值</th>
-	<th>市值差</th>
-	<th>现价</th>
-	<th>涨跌</th>
-	<th>卖一</th>
-	<th>额(万)</th>
-	<th>买一</th>
-	<th>额(万)</th>
-	<th>损耗</th>
-	<th>上市天数</th>
-	<th>PE</th>
-	<th>PB</th>
-	<th>time</th>
+<table border='1' style='border-collapse:collapse'>
+  <tr class='table-title'>
+    <th>NO</th>
+    <th>代码</th>
+    <th>名称</th>
+    <th>流通市值</th>
+    <th>市值差</th>
+    <th>现价</th>
+    <th>涨跌</th>
+    <th>卖一</th>
+    <th>额(万)</th>
+    <th>买一</th>
+    <th>额(万)</th>
+    <th>损耗</th>
+    <th>上市天数</th>
+    <th>PE</th>
+    <th>PB</th>
+    <th>time</th>
   </tr>
   {% set i = 0 %}
   {% for key,value in stockinfo_zhangting.items() %}
   {% set i=i+1 %}
       <tr>
-    	<td>{{i}}</td>
-    	<td>{{value.code}}</td>
-    	<td>{{value.name}}</td>
-    	<td>{{value['流通市值']}}</td>
-    	<td>-</td>
-    	<td>{{value.now}}</td>
-    	<td>{{value['涨跌(%)']}}</td>
-    	<td>{{value.ask1}}</td>
-    	<td>{{value.ask1_num}}</td>
-    	<td>{{value.bid1}}</td>
-    	<td>{{value.bid1_num}}</td>
-    	<td>-</td>
-    	<td>-</td>
-    	<td>{{value.PE}}</td>
-    	<td>{{value.PB}}</td>
-    	<td>{{value.datetime}}</td>
+        <td>{{i}}</td>
+        <td>{{value.code}}</td>
+        <td>{{value.name}}</td>
+        <td>{{value['流通市值']}}</td>
+        <td>-</td>
+        <td>{{value.now}}</td>
+        <td>{{value['涨跌(%)']}}</td>
+        <td>{{value.ask1}}</td>
+        <td>{{value.ask1_num}}</td>
+        <td>{{value.bid1}}</td>
+        <td>{{value.bid1_num}}</td>
+        <td>-</td>
+        <td>{{value.ipo_date_num}}</td>
+        <td>{{value.PE}}</td>
+        <td>{{value.PB}}</td>
+        <td>{{value.datetime}}</td>
       </tr>
   {% else %}
     <tr>data none</tr>

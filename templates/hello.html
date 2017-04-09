@@ -1,15 +1,48 @@
 <!doctype html>
+  <style>
+	.table-title{
+		background: #F5FFFA;
+	}
+	.double_row_bkcolor0{
+		background: #EAEAEA;
+	}
+	table{
+		border:1;
+		border-collapse:collapse;
+	}
+	table tr td{
+		text-align:right;
+	}
+	.font-red-bold{
+		color:red;
+		font-weight:bold;
+	}
+	.font-green-bold{
+		color:green;
+		font-weight:bold;
+	}
+	.font-bold{
+		font-weight:bold;
+	}
+	.font-red{
+		color:red;
+	}
+	.font-green{
+		color:green;
+	}
+	.font-blue{
+		color:blue;
+	}
+  </style>
 <title>Hello from Flask</title>
 {% if name %}
   <p>Hello {{ name }}!</p>
 {% else %}
   <p>Hello World!</p>
 {% endif %}
-<dd><input type='button' value='post1' onclick='getstockinfo();' />
-<!--form action='/post' method=post>
-<dd><input type='text' name='stockno' id='stockno' value='sz000001'>
-<dd><input type=submit value=Share>
-</form-->
+<dd><input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />
+<input type='button' value='取得上市日期（低频）' onclick='getipoinfo();' />
+<div id='ipo_info'></div>
 <div id='stock_info_error'></div>
 <div id='stock_info'></div>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -18,33 +51,37 @@
 //ref = setInterval(getstockinfo,10000);
 
 function getstockinfo () {
-	var stockno = $("#stockno").val();
-	//alert(stockno);
 	$.ajax({
 		type: "GET",
-		url: "/qq/" + stockno ,
-		data: {'stockno':stockno},
-		dataType: "text",
+		url: "/qq/",
+		//url: "/qq/" + stockno ,
+		//data: {'stockno':stockno},
+		//dataType: "text",
 		success: function(msg){
                 $('#stock_info').text("");
                 $('#stock_info_error').text("");
                 $('#stock_info').append(msg);
-                //edit_view(jQuery.parseJSON(msg));
 		},
 		error:function(){
                 $('#stock_info_error').text("error");
-                //$('#stock_info_error').append(msg);
 			return false;
 			},
 		});
+}
 
-function edit_view(jsonobj){
-    $('#stock_info').text("");
-    //$('#stock_info').append(jsonobj.stock['000001'].toJSONString());
-    $.each(jsonobj.stock, function(i,val){      
-        //alert(val.toJSONString());
-        $('#stock_info').append(val.name + val.now);
-    });
+//取得上市日期数据
+function getipoinfo(){
+	$.ajax({
+		type: "GET",
+		url: "/ipoinfo/",
+		success: function(msg){
+                $('ipo_info').text(msg);
+		},
+		error:function(){
+                $('ipo_info').text("error");
+				return false;
+			},
+		});
 }
-}
+
 </script>

@@ -7,10 +7,29 @@
   <meta name="Keywords" content="">
   <meta name="Description" content="">
   <title>Document</title>
+  <style>
+	.table-title{
+		background: #EAEAEA;
+	}
+	.double_row_bkcolor{
+		background: #F5FFFA;
+	}
+	table{
+		border:1;
+		border-collapse:collapse;
+	}
+	table tr td{
+		text-align:right;
+	}
+	.big_cha{
+		color:red;
+		font-weight:bold;
+	}
+  </style>
  </head>
  <body>
   <table>
-  <tr>
+  <tr class='table-title'>
 	<th>代码</th>
 	<th>名称</th>
 	<th>流通市值</th>
@@ -29,7 +48,19 @@
 	<td>{{value.now}}</td>
 	<td>{{value.ask1 + '' + value.ask1_volume}}</td>
 	<td>{{value.bid1 + '' + value.bid1_volume}}</td>
-	<td>{{(-1 + flot(value.ask1)/flot(value.bid1))*100}}</td>
+	<td>123</td>
+	<td align='right'>-</td>
+	<td>{{value.PE}}</td>
+	<td>-</td>
+  </tr>
+  <tr class='double_row_bkcolor'>
+	<td>{{value.code}}</td>
+	<td>{{value.name}}</td>
+	<td class='big_cha'>{{value['流通市值']}}</td>
+	<td>{{value.now}}</td>
+	<td>{{value.ask1 + '' + value.ask1_volume}}</td>
+	<td>{{value.bid1 + '' + value.bid1_volume}}</td>
+	<td>111</td>
 	<td>-</td>
 	<td>{{value.PE}}</td>
 	<td>-</td>
