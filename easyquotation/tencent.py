@@ -70,7 +70,7 @@ class Tencent(BaseQuotation):
                 'low': float(stock[34]),
                 '价格/成交量(手)/成交额': stock[35],  # 换成英文
                 '成交量(手)': int(stock[36]) * 100,  # 换成英文
-                '成交额(万)': float(stock[37]) * 10000,  # 换成英文
+                '成交额': float(stock[37]),  # 成交额(万)
                 'turnover': float(stock[38]) if stock[38] != '' else None,
                 'PE': float(stock[39]) if stock[39] != '' else None,
                 'unknown': stock[40],

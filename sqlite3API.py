@@ -90,7 +90,7 @@ def drop_table(conn, table):
     if table is not None and table != '':
         sql = 'DROP TABLE IF EXISTS ' + table
         if SHOW_SQL:
-            print('执行sql:[{}]'.format(sql))
+            print('sql:[{}]'.format(sql))
         cu = get_cursor(conn)
         cu.execute(sql)
         conn.commit()
@@ -104,7 +104,7 @@ def create_table(conn, sql):
     if sql is not None and sql != '':
         cu = get_cursor(conn)
         if SHOW_SQL:
-            print('执行sql:[{}]'.format(sql))
+            print('sql:[{}]'.format(sql))
         cu.execute(sql)
         conn.commit()
         print('创建数据库表[student]成功!')
@@ -136,7 +136,7 @@ def save(conn, sql, data):
             cu = get_cursor(conn)
             for d in data:
                 if SHOW_SQL:
-                    print('执行sql:[{}],参数:[{}]'.format(sql, d))
+                    print('sql:[{}],参数:[{}]'.format(sql, d))
                 cu.execute(sql, d)
                 conn.commit()
             close_all(conn, cu)
@@ -148,7 +148,7 @@ def fetchall(conn, sql):
     if sql is not None and sql != '':
         cu = get_cursor(conn)
         if SHOW_SQL:
-            print('执行sql:[{}]'.format(sql))
+            print('sql:[{}]'.format(sql))
         cu.execute(sql)
         r = cu.fetchall()
         if len(r) > 0:
@@ -162,7 +162,8 @@ def fetchmany(conn, sql):
     if sql is not None and sql != '':
         cu = get_cursor(conn)
         if SHOW_SQL:
-            print('执行sql:[{}]'.format(sql))
+            pass
+            #print('sql:[{}]'.format(sql))
         cu.execute(sql)
         r = cu.fetchall()
         if len(r) > 0:
@@ -180,7 +181,7 @@ def fetchone(conn, sql, data):
             d = (data,) 
             cu = get_cursor(conn)
 #            if SHOW_SQL:
-#                print('执行sql:[{}],参数:[{}]'.format(sql, data))
+#                print('sql:[{}],参数:[{}]'.format(sql, data))
             cu.execute(sql, d)
             r = cu.fetchall()
             if len(r) > 0:
@@ -199,7 +200,7 @@ def update(conn, sql, data):
             cu = get_cursor(conn)
             for d in data:
                 if SHOW_SQL:
-                    print('执行sql:[{}],参数:[{}]'.format(sql, d))
+                    print('sql:[{}],参数:[{}]'.format(sql, d))
                 cu.execute(sql, d)
                 conn.commit()
             close_all(conn, cu)
@@ -213,7 +214,7 @@ def delete(conn, sql, data):
             cu = get_cursor(conn)
             for d in data:
                 if SHOW_SQL:
-                    print('执行sql:[{}],参数:[{}]'.format(sql, d))
+                    print('sql:[{}],参数:[{}]'.format(sql, d))
                 cu.execute(sql, d)
                 conn.commit()
             close_all(conn, cu)
