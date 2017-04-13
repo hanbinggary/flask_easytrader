@@ -35,20 +35,55 @@
 	}
   </style>
 <title>Hello from Flask</title>
-{% if name %}
-  <p>Hello {{ name }}!</p>
-{% else %}
-  <p>Hello World!</p>
-{% endif %}
+
+<dd>
+<table border='1'>
+<tr>
+<th>交易市场</th>
+<th>卖出冻结</th>
+<th>市价</th>
+<th>市值</th>
+<th>成本价</th>
+<th>参考盈亏</th>
+<th>当前持仓</th>
+<th>盈亏比例</th>
+<th>股份余额</th>
+<th>股份可用</th>
+<th>代码</th>
+<th>名称</th>
+<th>卖出1/2</th>
+<th>换仓1/2</th>
+</tr>
+{% for kk in position %}
+<tr>
+<td>{{kk['交易市场']}}</td>
+<td>{{kk['卖出冻结']}}</td>
+<td>{{kk['参考市价']}}</td>
+<td>{{kk['参考市值']}}</td>
+<td>{{kk['参考成本价']}}</td>
+<td>{{kk['参考盈亏']}}</td>
+<td>{{kk['当前持仓']}}</td>
+<td>{{kk['盈亏比例(%)']}}</td>
+<td>{{kk['股份余额']}}</td>
+<td>{{kk['股份可用']}}</td>
+<td>{{kk['证券代码']}}</td>
+<td>{{kk['证券名称']}}</td>
+<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出1/2' onclick="sell({{kk['证券代码']}},{{kk['参考市价']}});" /></td>
+<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>
+</tr>
+{% endfor %}
+</table>
+<br>
 <dd><input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />
 <input type='button' value='取得上市日期（低频）' onclick='getipoinfo();' />
+<div id='buy_info'></div>
 <div id='ipo_info'></div>
 <div id='stock_info_error'></div>
 <div id='stock_info'></div>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
 
-//ref = setInterval(getstockinfo,10000);
+ref = setInterval(getstockinfo,34000);
 
 function getstockinfo () {
 	$.ajax({
@@ -79,6 +114,24 @@ function getipoinfo(){
 		},
 		error:function(){
                 $('ipo_info').text("error");
+				return false;
+			},
+		});
+}
+
+//buy
+function buy1(num){
+	//alert($('#min').val());
+	$.ajax({
+		type: "POST",
+		url: "/buy/",
+		data: {stockno:$('#min').val(),num:num},
+		//dataType: "text",
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(){
+                $('#buy_info').text("buy error");
 				return false;
 			},
 		});

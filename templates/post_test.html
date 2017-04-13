@@ -2,6 +2,13 @@
 <!--
 <title>Hello from Flask</title>
 -->
+<p>
+最小code：
+<input type='text' id='min' name='min' width='50px' value="{{stockinfo_sort[0][1]['code']}}" readonly />
+<input type='button' id='btn1' value='buy 2手' onclick='buy(200);'>
+<input type='button' id='btn1' value='buy 4手' onclick='buy(400);'>
+<input type='button' id='btn1' value='buy 6手' onclick='buy(600);'>
+</p>
 <p>最小流通市值</p>
   <table border='1' style='border-collapse:collapse'>
   <tr class='table-title'>
@@ -52,7 +59,7 @@
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
 </table>  
-<p>涨停板</p>
+<p>涨停板 停牌</p>
 <table border='1' style='border-collapse:collapse'>
   <tr class='table-title'>
     <th>NO</th>
@@ -100,3 +107,25 @@
   {% endfor %}
 
 </table>
+
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+//buy
+function buy(num){
+	//alert($('#min').val());
+	$.ajax({
+		type: "POST",
+		url: "/buy/",
+		data: {stockno:$('#min').val(),num:num},
+		//dataType: "text",
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(){
+                $('#buy_info').text("buy error");
+				return false;
+			},
+		});
+}
+
+</script>

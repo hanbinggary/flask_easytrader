@@ -1,5 +1,6 @@
 from flask import render_template
 from flask import Flask
+from flask import request
 import requests
 import easyquotation
 import json 
@@ -7,6 +8,7 @@ import tushare as ts
 import datetime
 import sqlite3 as lite
 import sqlite3API
+import easytrader
 
 app = Flask(__name__)
 
@@ -22,27 +24,49 @@ def post_test(stock='sz000001'):
         'http':'http://1:1@10.88.42.18:8080',
         'https':'http://1:1@10.88.42.18:8080' 
     }
-    proxies_xx = {
-        'http':'http://1:1@10.160.192.3:8080',
-        'https':'http://1:1@10.160.192.3:8080' 
-    }
     html = requests.get('http://hq.sinajs.cn/?format=text&list=%s' % stock,proxies=proxies)
     return render_template('post_test.html',stockinfo=html.text)
 
 @app.route('/hello/')
 @app.route('/hello/<name>')
 def hello(name=None):
-    return render_template('hello.html', name=name)
+    #user.position
+    position=\
+    [{'买入冻结': 0,
+  '交易市场': '沪A',
+  '卖出冻结': '0',
+  '参考市价': 4.71,
+  '参考市值': 10362.0,
+  '参考成本价': 4.672,
+  '参考盈亏': 82.79,
+  '当前持仓': 2200,
+  '盈亏比例(%)': '0.81%',
+  '股东代码': 'xxx',
+  '股份余额': 2200,
+  '股份可用': 2200,
+  '证券代码': '601398',
+  '证券名称': '工商银行'},
+  {'买入冻结': 0,
+  '交易市场': '沪A',
+  '卖出冻结': '0',
+  '参考市价': 4.71,
+  '参考市值': 10362.0,
+  '参考成本价': 4.672,
+  '参考盈亏': 82.79,
+  '当前持仓': 2200,
+  '盈亏比例(%)': '0.81%',
+  '股东代码': 'xxx',
+  '股份余额': 2200,
+  '股份可用': 2200,
+  '证券代码': '601398',
+  '证券名称': '工商银行1'}]
+    return render_template('hello.html', name=name,position=position)
 
 @app.route('/post_stock/<stock>')
 def post_stock(stock='sz000001'):
     proxies = {
         'http':'http://1:1@10.88.42.18:8080',
         'https':'http://1:1@10.88.42.18:8080' 
-    }
-    proxies_xx = {
-        'http':'http://1:1@10.160.192.3:8080',
-        'https':'http://1:1@10.160.192.3:8080' 
     }
     html = requests.get('http://hq.sinajs.cn/?format=text&list=%s' % stock,proxies=proxies)
     return html.text
@@ -56,9 +80,58 @@ def getIpoInfo(stock='000001'):
         df = (ts.get_stock_basics())
         cnx = lite.connect('stock.db')
         df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='append')
-        return '上市日期取得成功'
+        return 'get ipo OK'
     except:
-        return '上市日期取得失败'
+        return 'get ipo error'
+
+@app.route('/hello/buy/',methods=['POST'])
+@app.route('/buy/',methods=['POST'])
+def buy():
+    try:
+        num = request.form['num']
+        stockno = request.form['stockno']
+        price = '0' #request.form['price','0']
+
+        if len(stockno) != 6:
+            return 'tockno error. stockno:' + stockno
+        '''
+        user = easytrader.use('yh')
+        user.prepare(user='', password='')
+
+        if price=='0':
+            return user.buy(stockno, amount=num, entrust_prop='market')
+        else:
+            return user.buy(stockno, price=price, amount=num)
+        '''
+
+        return "stock:" + stockno + ",num:" + num 
+    except Exception as e:
+        print(e)
+        return e
+
+@app.route('/hello/sell/',methods=['POST'])
+@app.route('/sell/',methods=['POST'])
+def sell():
+    try:
+        num = request.form['num']
+        stockno = request.form['stockno']
+        price = request.form.get['price','0']
+
+        if len(stockno) != 6:
+            return 'tockno error. stockno:' + stockno
+
+        user = easytrader.use('yh')
+        user.prepare(user='', password='')
+
+        if price=='0':
+            return user.sell(stockno, amount=num, entrust_prop='market')
+        else:
+            return user.sell(stockno, price=price, amount=num)
+
+        #return "stock:" + stockno + ",num:" + num 
+    except Exception as e:
+        print(e)
+        return e
 
 @app.route('/qq/<stock>')
 @app.route('/hello/qq/')
@@ -68,7 +141,7 @@ def tq_test(stock='000001'):
 #    print (time.time())
 #    print (q.stocks(['000001','000002','000005', '162411']))
 #    print (time.time())
-    stock_list=['002858','603041','002857','603388','603178','002816','603031','603701','603991','002806','603319','002796','603090','603038','603990','603029','002800','603908','002810','002837','002835','603738','002805','603960','603266','603037','603819','603633','603887','002856','603033','603663','002830','603637','603089','603032','002808']
+    stock_list=['002858','603041','002857','603388','603178','002816','603031','603991','002806','603319','603090','603038','603990','603908','002810','002837','002835','603738','002805','603960','603266','603037','603819','603633','603887','002856','603033','603663','002830','603637','603089','603032','002808']
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 #    print(stockinfo.get('000001'))
     #json_obj = json.dumps(dict(stock=stockinfo),ensure_ascii=False)
@@ -110,7 +183,7 @@ def tq_test(stock='000001'):
         except:
             pass
 
-    return render_template('post_test.html', entries=stockinfo,stockinfo_zhangting=stockinfo_zhangting,stockinfo_sort=temp)
+    return render_template('post_test.html', stockinfo_zhangting=stockinfo_zhangting,stockinfo_sort=temp)
 
 #从本地sqlite取得上市日期
 def gettimeToMarket(stock_list):
