@@ -16,7 +16,7 @@ class Tencent(BaseQuotation):
         stock_details = stocks_detail.split(';')
         stock_dict = dict()
         stock_dict_zhangting = dict()#涨停板
-        stock_dict_stop = dict()#停牌
+        
         for stock_detail in stock_details:
             stock = stock_detail.split('~')
             if len(stock) <= 49:
@@ -92,7 +92,7 @@ class Tencent(BaseQuotation):
                 '涨停价': float(stock[47]),  # 换成英文
                 '跌停价': float(stock[48])  # 换成英文
             }
-            if (float(stock[47]) == float(stock[3]) or float(stock[3])==0.0):
+            if (float(stock[47]) == float(stock[3]) or float(stock[3])==0.0 or float(stock[32])>10):
                 #涨停板
                 stock_dict_zhangting[stock_code] = temp_item
             elif (float(stock[3])>0.0):
