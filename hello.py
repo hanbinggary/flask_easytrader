@@ -3,7 +3,7 @@ from flask import Flask
 from flask import request
 #import requests
 import easyquotation
-import json 
+#import json 
 import tushare as ts
 import datetime
 import sqlite3 as lite
@@ -17,34 +17,23 @@ def hello(name=None):
     #user.position
     position=\
     [{'买入冻结': 0,
-  '交易市场': '沪A',
-  '卖出冻结': '0',
-  '参考市价': 4.71,
-  '参考市值': 10362.0,
-  '参考成本价': 4.672,
-  '参考盈亏': 82.79,
-  '当前持仓': 2200,
-  '盈亏比例(%)': '0.81%',
-  '股东代码': 'xxx',
-  '股份余额': 2200,
-  '股份可用': 2200,
-  '证券代码': '601398',
-  '证券名称': '工商银行'},
-  {'买入冻结': 0,
-  '交易市场': '沪A',
-  '卖出冻结': '0',
-  '参考市价': 4.71,
-  '参考市值': 10362.0,
-  '参考成本价': 4.672,
-  '参考盈亏': 82.79,
-  '当前持仓': 2200,
-  '盈亏比例(%)': '0.81%',
-  '股东代码': 'xxx',
-  '股份余额': 2200,
-  '股份可用': 2200,
-  '证券代码': '601398',
-  '证券名称': '工商银行1'}]
-    return render_template('hello.html', name=name,position=position)
+      '交易市场': '沪A',
+      '卖出冻结': '0',
+      '参考市价': 4.71,
+      '参考市值': 10362.0,
+      '参考成本价': 4.672,
+      '参考盈亏': 82.79,
+      '当前持仓': 2200,
+      '盈亏比例(%)': '0.81%',
+      '股东代码': 'xxx',
+      '股份余额': 2200,
+      '股份可用': 2200,
+      '证券代码': '601398',
+      '证券名称': '工商银行'}]
+      
+#    user = getUser()
+    
+    return render_template('hello.html', position=position)
 
 @app.route('/ipoinfo/')
 def getIpoInfo(stock='000001'):
@@ -63,42 +52,58 @@ def buy():
     try:
         num = request.form['num']
         stockno = request.form['stockno']
-        price = '0' #request.form['price','0']
+        price = request.form['price']
 
         if len(stockno) != 6:
             return 'tockno error. stockno:' + stockno
-        '''
-        user = easytrader.use('yh')
-        user.prepare(user='', password='')
-
-        if price=='0':
-            return user.buy(stockno, amount=num, entrust_prop='market')
-        else:
-            return user.buy(stockno, price=price, amount=num)
-        '''
-
-        return "stock:" + stockno + ",num:" + num 
+        
+        user = getUser()
+        result=dict()
+#        if price==0:
+#            result = user.buy(stockno, 1, amount=num, entrust_prop='market')
+#        else:
+#            result = user.buy(stockno, price, amount=num)
+        
+        result = user.buy(stockno, price, amount=num, entrust_prop='market')   
+        
+        print(result)
+        return dictToString(result)
+        
+        #return "stock:" + stockno + ",num:" + num 
     except Exception as e:
         print(e)
         return e
+        
+def getUser():
+    user = easytrader.use('yh')
 
+    user.prepare(user='', password='')
+    return user
+    
+def dictToString(sample_dic):
+    result_str = []
+    for key, value in sample_dic.items():
+        result_str.append("'%s':'%s'" % (key, value))
+    return ','.join(result_str)
+    
 @app.route('/sell/',methods=['POST'])
 def sell():
     try:
         num = request.form['num']
         stockno = request.form['stockno']
-        price = request.form.get['price','0']
+        price = request.form['price']
 
         if len(stockno) != 6:
             return 'tockno error. stockno:' + stockno
 
-        user = easytrader.use('yh')
-        user.prepare(user='', password='')
-
-        if price=='0':
-            return user.sell(stockno, amount=num, entrust_prop='market')
-        else:
-            return user.sell(stockno, price=price, amount=num)
+        user = getUser()
+        result = user.sell(stockno, price, amount=num, entrust_prop='market')
+        return dictToString(result)
+       
+#        if price=='0':
+#            return user.sell(stockno, amount=num, entrust_prop='market')
+#        else:
+#            return user.sell(stockno, price=price, amount=num)
 
         #return "stock:" + stockno + ",num:" + num 
     except Exception as e:

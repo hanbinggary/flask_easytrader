@@ -2,13 +2,14 @@
 <!--
 <title>Hello from Flask</title>
 -->
+<!--
 <p>
 最小code：
 <input type='text' id='min' name='min' width='50px' value="{{stockinfo_sort[0][1]['code']}}" readonly />
 <input type='button' id='btn1' value='buy 2手' onclick='buy(200);'>
 <input type='button' id='btn1' value='buy 4手' onclick='buy(400);'>
-<input type='button' id='btn1' value='buy 6手' onclick='buy(600);'>
 </p>
+-->
 <p>最小流通市值</p>
   <table border='1' style='border-collapse:collapse'>
   <tr class='table-title'>
@@ -30,6 +31,7 @@
     <th>PE</th>
     <th>PB</th>
     <th>time</th>
+    <th>买入</th>
   </tr>
   {% set i = 0 %}
   {% set new_ipo_class = '' %}
@@ -54,6 +56,12 @@
         <td>{{value.PE}}</td>
         <td>{{value.PB}}</td>
         <td>{{value.datetime}}</td>
+        <td>
+  {% if i<=5 %}
+            <input type='button' id='btn1' value='buy 2手' onclick="buy('{{value.code}}',200,{{value.ask1}});">
+            <input type='button' id='btn1' value='buy 4手' onclick="buy('{{value.code}}',400,{{value.ask1}});">
+  {%endif%}
+        </td>
       </tr>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
@@ -107,25 +115,3 @@
   {% endfor %}
 
 </table>
-
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script type="text/javascript">
-//buy
-function buy(num){
-	//alert($('#min').val());
-	$.ajax({
-		type: "POST",
-		url: "/buy/",
-		data: {stockno:$('#min').val(),num:num},
-		//dataType: "text",
-		success: function(msg){
-                $('#buy_info').text(msg);
-		},
-		error:function(){
-                $('#buy_info').text("buy error");
-				return false;
-			},
-		});
-}
-
-</script>
