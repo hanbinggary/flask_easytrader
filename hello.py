@@ -66,18 +66,19 @@ def buy():
         
         result = user.buy(stockno, price, amount=num, entrust_prop='market')   
         
-        print(result)
+        #print(result)
         return dictToString(result)
         
         #return "stock:" + stockno + ",num:" + num 
     except Exception as e:
-        print(e)
+        #print(e)
         return e
         
 def getUser():
     user = easytrader.use('yh')
 
-    user.prepare(user='', password='')
+    #user.prepare(user='', password='')
+    user.prepare('yh.json')
     return user
     
 def dictToString(sample_dic):
@@ -107,7 +108,7 @@ def sell():
 
         #return "stock:" + stockno + ",num:" + num 
     except Exception as e:
-        print(e)
+        #print(e)
         return e
 
 #批量取得最新行情 高频数据
