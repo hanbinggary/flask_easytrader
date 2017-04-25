@@ -161,7 +161,7 @@ def gettimeToMarket():
 
     conn = sqlite3API.get_conn('stock.db')
     #sql_tid ="select code,timeToMarket from stock_info where code in ('" + "','".join(stock_list) + "')"
-    sql_tid='''
+    sql_tid_bak='''
         select stock_info.code,stock_info.timeToMarket from liutong_info 
         inner join stock_info on
         liutong_info.code = stock_info.code
@@ -169,6 +169,15 @@ def gettimeToMarket():
         and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days')
         order by liutong_info.nmc 
         limit 40;
+        '''
+    sql_tid='''
+        select stock_info.code,stock_info.timeToMarket from liutong_from_qq 
+        inner join stock_info on
+        liutong_from_qq.code = stock_info.code
+        where liutong_from_qq.liutong<13 and substr(liutong_from_qq.code,1,1) != '3' 
+        and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days')
+        order by liutong_from_qq.liutong 
+        limit 50;
         '''
     info_tid=sqlite3API.fetchmany(conn,sql_tid)
     dic = dict()

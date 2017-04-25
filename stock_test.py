@@ -141,11 +141,57 @@ def gettimeToMarket():
         dic[info_temp[0]] = str(info_temp[1])
         stock_list.append(info_temp[0])
     
-    return dic,stock_list        
+    return dic,stock_list     
+
+def getCixinCode():
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select code from stock_info 
+        where substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days') 
+        and substr(code,1,1) != '3' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+    stock_list=[]
+    for info_temp in info_tid:
+        stock_list.append(info_temp[0])
+    
+    return stock_list     
+
+def getLiutong_from_qq():
+    q = easyquotation.use('qq')
+
+    #取上市300天内的股票
+    stock_list = getCixinCode()
+    stockinfo,stockinfo_zhangting = q.stocks(stock_list)
+    data = []
+    '''
+    for key,value in stockinfo.items():
+        try:
+            infoLiutong = (stockinfo[key]['code'],stockinfo[key]['流通市值'])
+            data.append(infoLiutong)
+
+        except Exception as e:
+            print(e)
+            '''
+    for key,value in stockinfo_zhangting.items():
+        try:
+            infoLiutong = (stockinfo_zhangting[key]['code'],stockinfo_zhangting[key]['流通市值'])
+            data.append(infoLiutong)
+
+        except Exception as e:
+            print(e)
+    #sql_truncat = 'truncat table liutong_from_qq'
+    sql = 'insert into liutong_from_qq values(?,?)'
+    conn = sqlite3API.get_conn('stock.db')
+    #sqlite3API.save(conn,sql_truncat,data)
+    sqlite3API.save(conn,sql,data)
+    print('getLiutong_from_qq OK!')
+
 if __name__ == '__main__':
     #test_sqlite()
 #    getLiutong()
-#    getIpoInfo()
-    
+    #getIpoInfo()
+    getLiutong_from_qq()
 #    test_sqlite()
-    tq_test()
+#    tq_test()
