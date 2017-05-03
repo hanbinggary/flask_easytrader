@@ -136,7 +136,8 @@ def save(conn, sql, data):
             cu = get_cursor(conn)
             for d in data:
                 if SHOW_SQL:
-                    print('sql:[{}],参数:[{}]'.format(sql, d))
+                    pass
+                    #print('sql:[{}],参数:[{}]'.format(sql, d))
                 cu.execute(sql, d)
                 conn.commit()
             close_all(conn, cu)
@@ -218,6 +219,16 @@ def delete(conn, sql, data):
                 cu.execute(sql, d)
                 conn.commit()
             close_all(conn, cu)
+    else:
+        print('the [{}] is empty or equal None!'.format(sql))
+
+def truncate(conn, tablename):
+    '''clear数据'''
+    if tablename is not None and tablename != '':
+        cu = get_cursor(conn)
+        cu.execute('delete from ' + tablename)
+        conn.commit()
+        close_all(conn, cu)
     else:
         print('the [{}] is empty or equal None!'.format(sql))
 ###############################################################
