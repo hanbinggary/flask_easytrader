@@ -188,10 +188,19 @@ def getLiutong_from_qq():
     sqlite3API.save(conn,sql,data)
     print('getLiutong_from_qq OK!')
 
+def insertTradeCal():
+    df = pd.DataFrame.from_csv('TradeCalGet.csv')
+    cnx = lite.connect('stock.db')
+    df.to_sql('trade_calender',con=cnx,flavor='sqlite', if_exists='replace')
+    print(df)
+
 if __name__ == '__main__':
     #test_sqlite()
 #    getLiutong()
     #getIpoInfo()
-    getLiutong_from_qq()
+#    getLiutong_from_qq()
 #    test_sqlite()
 #    tq_test()
+#    insertTradeCal()
+    
+    print(str(datetime.datetime.now())[:10])
