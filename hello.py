@@ -67,7 +67,7 @@ def buy():
         
         result = user.buy(stockno, price, amount=num, entrust_prop='market')   
         
-        print(result)
+#        print(result)
         return dictToString(result)
         
         #return "stock:" + stockno + ",num:" + num 
@@ -114,7 +114,7 @@ def sell():
 
 #批量取得最新行情 高频数据
 @app.route('/qq/')
-def tq_test():
+def getHangqingFromQQ():
     
     q = easyquotation.use('qq')
 
@@ -122,8 +122,10 @@ def tq_test():
     dic,stock_list = gettimeToMarket()
 
     #stock_list=['002858','603041','002857','603388','603178','002816','603031','603991','002806','603319','603090','603038','603990','603908','002810','002837','002835','603738','002805','603960','603266','603037','603819','603633','603887','002856','603033','603663','002830','603637','603089','603032','002808']
+    #取得最新行情 from qq
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 
+    #按流通市值排序
     temp = sorted(stockinfo.items(), key=lambda d:d[1]['流通市值'])
 
     #最小流通市值取得
@@ -139,11 +141,11 @@ def tq_test():
             liutong_sunhao = stockinfo[key]['流通市值']*stockinfo[key]['bid1']/stockinfo[key]['now']
             min_liutong_sunhao = min_liutong['流通市值']*min_liutong['ask1']/min_liutong['now']
             stockinfo[key]['cha_sunhao'] = str(round((liutong_sunhao/min_liutong_sunhao - 1)*100,2)) + '%'
+            #该股为持仓股时，判断是否需要调仓
             if key in dic_position.keys():
-                auto_trader.autoTrader(key,min_liutong['code'],round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
+                auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
             #上市天数计算
             d1 = datetime.datetime.strptime(dic[key], '%Y%m%d')
-#            print(d1)
             ipo_date_num = (datetime.datetime.now()-d1).days
             stockinfo[key]['ipo_date_num'] = ipo_date_num if ipo_date_num > 50 else str(ipo_date_num) + ' 天'
             stockinfo[key]['ipo_date_num_css'] = 'font-red-bold' if ipo_date_num <= 50 else ''
