@@ -43,7 +43,7 @@ def getIpoInfo(stock='000001'):
         #上市日期取得
         df = (ts.get_stock_basics())
         cnx = lite.connect('stock.db')
-        df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='append')
+        df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='replace')
         return 'get ipo OK'
     except:
         return 'get ipo error'
@@ -60,10 +60,6 @@ def buy():
         
         user = getUser()
         result=dict()
-#        if price==0:
-#            result = user.buy(stockno, 1, amount=num, entrust_prop='market')
-#        else:
-#            result = user.buy(stockno, price, amount=num)
         
         result = user.buy(stockno, price, amount=num, entrust_prop='market')   
         
@@ -101,13 +97,7 @@ def sell():
         user = getUser()
         result = user.sell(stockno, price, amount=num, entrust_prop='market')
         return dictToString(result)
-       
-#        if price=='0':
-#            return user.sell(stockno, amount=num, entrust_prop='market')
-#        else:
-#            return user.sell(stockno, price=price, amount=num)
 
-        #return "stock:" + stockno + ",num:" + num 
     except Exception as e:
         #print(e)
         return e
@@ -130,6 +120,7 @@ def getHangqingFromQQ():
 
     #最小流通市值取得
     min_liutong = min(stockinfo.items(), key=lambda d:d[1]['流通市值'])[1]
+    
     #get Position
     dic_position = auto_trader.getPosition()
     #计算流通市值差
@@ -141,14 +132,14 @@ def getHangqingFromQQ():
             liutong_sunhao = stockinfo[key]['流通市值']*stockinfo[key]['bid1']/stockinfo[key]['now']
             min_liutong_sunhao = min_liutong['流通市值']*min_liutong['ask1']/min_liutong['now']
             stockinfo[key]['cha_sunhao'] = str(round((liutong_sunhao/min_liutong_sunhao - 1)*100,2)) + '%'
-            #该股为持仓股时，判断是否需要调仓
-            if key in dic_position.keys():
-                auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
             #上市天数计算
             d1 = datetime.datetime.strptime(dic[key], '%Y%m%d')
             ipo_date_num = (datetime.datetime.now()-d1).days
             stockinfo[key]['ipo_date_num'] = ipo_date_num if ipo_date_num > 50 else str(ipo_date_num) + ' 天'
             stockinfo[key]['ipo_date_num_css'] = 'font-red-bold' if ipo_date_num <= 50 else ''
+            #该股为持仓股时，判断是否需要调仓
+            if key in dic_position.keys():
+                auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
         except:
             pass
 
@@ -186,6 +177,8 @@ def gettimeToMarket():
         order by liutong_from_qq.liutong 
         limit 40;
         '''
+    #union all XXX 持仓股
+        
     info_tid=sqlite3API.fetchmany(conn,sql_tid)
     dic = dict()
     stock_list=[]

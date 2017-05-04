@@ -61,20 +61,20 @@ def getIpoInfo():
     except:
         print( 'get ipo error')
         
-#tushare 取流通市值
-def getLiutong():
-    
-    try:
-        #取得流通市值
-        df = ts.get_today_all()
-        cnx = lite.connect('stock.db')
-        if len(df) > 3000:
-            df.to_sql('liutong_info',con=cnx,flavor='sqlite', if_exists='replace')
-            print( 'get liutong OK')
-        else:
-            print('get_today_all error')
-    except:
-        print( 'get liutong error')
+#tushare 取流通市值（速度慢）
+#def getLiutong():
+#    
+#    try:
+#        #取得流通市值
+#        df = ts.get_today_all()
+#        cnx = lite.connect('stock.db')
+#        if len(df) > 3000:
+#            df.to_sql('liutong_info',con=cnx,flavor='sqlite', if_exists='replace')
+#            print( 'get liutong OK')
+#        else:
+#            print('get_today_all error')
+#    except:
+#        print( 'get liutong error')
 
 def tq_test():
     
@@ -149,7 +149,7 @@ def getCixinCode():
     sql_tid='''
         select code from stock_info 
         where substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days') 
-        and substr(code,1,1) != '3' ;
+        --and substr(code,1,1) != '3' ;
         '''
     info_tid=sqlite3API.fetchmany(conn,sql_tid)
     stock_list=[]
@@ -165,7 +165,7 @@ def getLiutong_from_qq():
     stock_list = getCixinCode()
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
     data = []
-    '''
+    
     for key,value in stockinfo.items():
         try:
             infoLiutong = (stockinfo[key]['code'],stockinfo[key]['流通市值'])
@@ -173,7 +173,7 @@ def getLiutong_from_qq():
 
         except Exception as e:
             print(e)
-            '''
+            
     for key,value in stockinfo_zhangting.items():
         try:
             infoLiutong = (stockinfo_zhangting[key]['code'],stockinfo_zhangting[key]['流通市值'])
@@ -185,6 +185,8 @@ def getLiutong_from_qq():
     sql = 'insert into liutong_from_qq values(?,?)'
     conn = sqlite3API.get_conn('stock.db')
     #sqlite3API.save(conn,sql_truncat,data)
+    sqlite3API.truncate(conn,'liutong_from_qq')
+
     sqlite3API.save(conn,sql,data)
     print('getLiutong_from_qq OK!')
 
@@ -198,7 +200,7 @@ if __name__ == '__main__':
     #test_sqlite()
 #    getLiutong()
     #getIpoInfo()
-#    getLiutong_from_qq()
+    getLiutong_from_qq()
 #    test_sqlite()
 #    tq_test()
 #    insertTradeCal()

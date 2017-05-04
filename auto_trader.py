@@ -97,12 +97,11 @@ def getUser():
 
 #登录交易记录
 def insertTradeHistory(position_info,min_liutong):
-    sql = 'insert into XXXXXXXXX values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+    sql = 'insert into trade_history values(' + ('?,'*47) + "?,datetime('now'))"
     conn = sqlite3API.get_conn('stock.db')
     data = []
     data.append(editStockInfo(position_info,'S'))
     data.append(editStockInfo(min_liutong,'B'))
-    sqlite3API.truncate(conn,'chicang')
     sqlite3API.save(conn,sql,data)
     print('insertTradeHistory OK!')
     print (data)
@@ -140,21 +139,15 @@ def editStockInfo(stock_info,flg='B'):
     result.append(stock_info['ask5'])
     result.append(stock_info['ask5_volume'])
     result.append(stock_info['损耗'])
-    result.append(stock_info['sunhao_css'])
-    result.append(stock_info['最近逐笔成交'])
     result.append(stock_info['datetime'])
     result.append(stock_info['涨跌'])
     result.append(stock_info['涨跌(%)'])
     result.append(stock_info['high'])
     result.append(stock_info['low'])
-    result.append(stock_info['价格/成交量(手)/成交额'])
     result.append(stock_info['成交量(手)'])
     result.append(stock_info['成交额'])
     result.append(stock_info['turnover'])
     result.append(stock_info['PE'])
-    result.append(stock_info['unknown'])
-    result.append(stock_info['high_2'])
-    result.append(stock_info['low_2'])
     result.append(stock_info['振幅'])
     result.append(stock_info['流通市值'])
     result.append(stock_info['cha'])
