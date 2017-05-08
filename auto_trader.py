@@ -41,7 +41,7 @@ def checkTradeTime(str_time):
         return True
         
     #闭市前几分钟无法看到五档行情，不做交易
-    if str_time >= '13:00' and str_time < '14:26':
+    if str_time >= '13:00' and str_time < '14:57':
         return True
     
     return False
@@ -63,26 +63,29 @@ def autoTrader(position_info,min_liutong,cha):
         return
     
     if checkTradeTime(min_liutong['datetime'][1:6]) == False:
-        print('非交易时间%s' % min_liutong['datetime'])
+        print('not trade time %s' % min_liutong['datetime'])
         return
-    return    
+
     try:
         dic_position = getPosition()
         user = getUser()
+        '''
         position = user.position
         for item in position:
             if item['证券代码'] == code_position and item['股份可用'] == 0:
-                print ('无可卖股份')
+                print ('keyong_gufen == 0')
                 return
-                
+        '''     
         result_sell = user.sell(code_position, '1000', amount=dic_position[code_position], entrust_prop='market') 
-        time.sleep(0.2)
+        time.sleep(1)
         result_buy = user.buy(min_liutong['code'], '1', amount=dic_position[code_position], entrust_prop='market') 
-        print(result_sell,result_buy)
-        
+        #print(result_sell,result_buy)
+        time.sleep(1)
         insertPosition(user.position)
+        insertTradeHistory(position_info,min_liutong)
         message_ok = 'sell %s buy %s amount %s' % (code_position,min_liutong['code'],dic_position[code_position])
         send_mail('huancang OK',message_ok)
+        print('*' * 50)        
         print('huancang OK!',message_ok)        
     except Exception as e:
         send_mail('error trade',str(e))
@@ -184,7 +187,7 @@ def insertPosition(position):
 
     sqlite3API.truncate(conn,'chicang')
     sqlite3API.save(conn,sql,data)
-    print('getLiutong_from_qq OK!')
+    print('insertPosition OK!')
     print (data)
 
 #get 持仓信息 from sqlite
