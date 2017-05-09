@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-
+import os
 import smtplib  
 from email.mime.text import MIMEText  
+
 mail_host="smtp.139.com"  #设置服务器
-mail_user="XXX@139.com"    #用户名
-mail_pass=""   #口令 
+mail_user=os.environ['mailfrom'] if os.environ['mailfrom'] else ''   #用户名
+mail_pass=os.environ['mailfrompassword'] if os.environ['mailfrompassword'] else ''   #口令 
 mail_postfix="139.com"  #发件箱的后缀
+mail_to =os.environ['mailto'] if os.environ['mailto'] else ''
   
-def send_mail(sub,content,to_list=['@126.com']):  
+def send_mail(sub,content,to_list=[mail_to]):  
     me="hello"+"<"+mail_user+"@"+mail_postfix+">"  
     msg = MIMEText(content,_subtype='plain',_charset='gb2312')  
     msg['Subject'] = sub  

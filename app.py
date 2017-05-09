@@ -111,7 +111,6 @@ def getHangqingFromQQ():
     #取上市300天内的最小流通市值 top 40
     dic,stock_list = gettimeToMarket()
 
-    #stock_list=['002858','603041','002857','603388','603178','002816','603031','603991','002806','603319','603090','603038','603990','603908','002810','002837','002835','603738','002805','603960','603266','603037','603819','603633','603887','002856','603033','603663','002830','603637','603089','603032','002808']
     #取得最新行情 from qq
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 
@@ -158,16 +157,6 @@ def getHangqingFromQQ():
 def gettimeToMarket():
 
     conn = sqlite3API.get_conn('stock.db')
-    #sql_tid ="select code,timeToMarket from stock_info where code in ('" + "','".join(stock_list) + "')"
-    sql_tid_bak='''
-        select stock_info.code,stock_info.timeToMarket from liutong_info 
-        inner join stock_info on
-        liutong_info.code = stock_info.code
-        where liutong_info.nmc<120000 and substr(liutong_info.code,1,1) != '3' 
-        and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days')
-        order by liutong_info.nmc 
-        limit 40;
-        '''
     sql_tid='''
         select stock_info.code,stock_info.timeToMarket from liutong_from_qq 
         inner join stock_info on
