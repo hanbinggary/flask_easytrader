@@ -4,9 +4,9 @@ from flask import request
 #import requests
 import easyquotation
 #import json 
-import tushare as ts
+#import tushare as ts
 import datetime
-import sqlite3 as lite
+#import sqlite3 as lite
 import sqlite3API
 import easytrader
 import auto_trader
@@ -15,38 +15,20 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello(name=None):
-    #user.position
-    position=\
-    [{'买入冻结': 0,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601398',
-      '证券名称': '工商银行'}]
-      
-#    user = getUser()
     
-    return render_template('hello.html', position=position)
+    return render_template('hello.html', position=auto_trader.getAllPositionFromSqlite())
 
 @app.route('/ipoinfo/')
 def getIpoInfo(stock='000001'):
-    
-    try:
-        #上市日期取得
-        df = (ts.get_stock_basics())
-        cnx = lite.connect('stock.db')
-        df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='replace')
-        return 'get ipo OK'
-    except:
-        return 'get ipo error'
+    pass
+#    try:
+#        #上市日期取得
+#        df = (ts.get_stock_basics())
+#        cnx = lite.connect('stock.db')
+#        df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='replace')
+#        return 'get ipo OK'
+#    except:
+#        return 'get ipo error'
 
 @app.route('/buy/',methods=['POST'])
 def buy():

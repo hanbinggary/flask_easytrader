@@ -50,7 +50,7 @@ def checkTradeTime(str_time):
 def autoTrader(position_info,min_liutong,cha):
     code_position = position_info['code']
     #满足差价(4%)才交易
-    if cha <= 4 :
+    if cha <= 3 :
         print ('cha %s' % cha)
         return
         
@@ -208,45 +208,60 @@ def getPosition():
 #    print('OK' if '6013192' in dic.keys() else '')
 #    print(dic.keys())
     return dic
+def getAllPositionFromSqlite():
+
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select mairu_dongjie,jiaoyi_shichang,maichu_dongjie,shijia,shizhi,chengbenjia,yingkui,tangqian_chicang,yingkui_bili,gudong_daima,gufen_yue,gufen_keyong,code,name from chicang ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+#    print(info_tid)
+    list_dic=[]
+#    dic = dict()
+    for info_temp in info_tid:
+        temp_item = {
+            '买入冻结': info_temp[0],
+            '交易市场': info_temp[1],
+            '卖出冻结': info_temp[2],
+            '参考市价': info_temp[3],
+            '参考市值': info_temp[4],
+            '参考成本价': info_temp[5],
+            '参考盈亏': info_temp[6],
+            '当前持仓': info_temp[7],
+            '盈亏比例(%)': info_temp[8],
+            '股东代码': info_temp[9],
+            '股份余额': info_temp[10],
+            '股份可用': info_temp[11],
+            '证券代码': info_temp[12],
+            '证券名称': info_temp[13]
+        }
+#        dic[info_temp[12]]=temp_item
+#        print(temp_item)
+        list_dic.append(temp_item)
+    return list_dic
 
 def getPositionFromYinhe():
     user = getUser()
     position = user.position
     return position
+
+def get_ipo_info():
+    user = getUser()
+    df_today_ipo, df_ipo_limit = user.get_ipo_info()
+    print (df_today_ipo)
+    for i in range(len(df_today_ipo)):
+        code = df_today_ipo.ix[i]['代码']
+        price = df_today_ipo.ix[i]['价格']
+        amount = df_today_ipo.ix[i]['账户额度']
+        result = user.buy(code,price,amount=amount)
+        print(result)
     
 if __name__ == '__main__':
-    position=\
-    [{'买入冻结': 0,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601398',
-      '证券名称': '工商银行'},
-      {'买入冻结': 1,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601392',
-      '证券名称': '工商银行1'}]
-#    print(time.time())
-#    insertPosition(getPositionFromYinhe())
-#    getPosition()
-    print(time.time())
-    print(checkTraderNone('601398'))
-    print(time.time())
+
+    dic = getPosition()
+    print(dic)
+    print(dic.keys())
+    list1= [1,2]
+    list2 = list(set(dic.keys())|set(list1))
+    print(list2)

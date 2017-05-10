@@ -5,6 +5,9 @@ import sqlite3API
 import json
 import sqlite3 as lite
 import easyquotation
+import auto_trader
+import time
+
 #取得上市天数
 #df = (ts.get_stock_basics())
 #df.to_excel('stock_list.xlsx')
@@ -196,13 +199,28 @@ def insertTradeCal():
     df.to_sql('trade_calender',con=cnx,flavor='sqlite', if_exists='replace')
     print(df)
 
+def getPositionAndBuyIPO():
+    try:
+        user = auto_trader.getUser()
+        print('position')
+        #position
+        data = auto_trader.insertPosition(user.position)
+        print('time.sleep(1)')
+        time.sleep(1)
+        #getIpo
+        df_today_ipo,df_ipo_limit = user.get_ipo_info()
+        result_mail = ''
+        for i in range(len(df_today_ipo)):
+            code = df_today_ipo.ix[i]['代码']
+            price = df_today_ipo.ix[i]['价格']
+            amount = df_today_ipo.ix[i]['账户额度']
+            result = user.buy(code,price,amount=amount)
+            result_mail += '***<br>\r\n buy IPO:%s,%s,%s,%s' % (code,price,amount,str(result))
+#        send_mail('Position and IPO',str(data) + result_mail)
+        print(str(data) + result_mail)
+    except Exception as e :
+        print(str(e))
+#        send_mail('[error] Position and IPO ',str(e))
+
 if __name__ == '__main__':
-    #test_sqlite()
-#    getLiutong()
-    #getIpoInfo()
-    getLiutong_from_qq()
-#    test_sqlite()
-#    tq_test()
-#    insertTradeCal()
-    
-    print(str(datetime.datetime.now())[:10])
+    getPositionAndBuyIPO()
