@@ -4,8 +4,8 @@ leancloud-sdk
 Flask>=0.10.1,<1.0.0
 Flask-Sockets>=0.1,<1.0
 requests>=2.10.0,<3.0
-lxml
-demjson
-tushare
-pandas
+lxml==3.6.0
+demjson==2.2.4
+tushare==0.6.3
+pandas==0.18.1
 easytrader

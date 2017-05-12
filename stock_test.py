@@ -79,8 +79,8 @@ def getIpoInfo():
 #    except:
 #        print( 'get liutong error')
 
-def tq_test():
-    
+#多股持仓的时候，进行调仓
+def mulitTiaocang():
     q = easyquotation.use('qq')
 
     #取上市300天内的最小流通市值 top 40
@@ -90,6 +90,37 @@ def tq_test():
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 
     temp = sorted(stockinfo.items(), key=lambda d:d[1]['流通市值'])
+    #非持仓 最小流通市值取得
+    min_liutong_trade = None
+    #print(temp)
+    for key,value in temp:
+        if checkExistsCode(key)==False:
+            min_liutong_trade = value
+            print(min_liutong_trade['code'],min_liutong_trade['name'],min_liutong_trade['流通市值'])
+            break
+    
+    #get Position
+    dic_position = auto_trader.getPosition()
+    
+    max_chicang_liutong_trade = getMaxChicangLiutong(stockinfo,dic_position.keys())
+    print (max_chicang_liutong_trade['code'],max_chicang_liutong_trade['name'],max_chicang_liutong_trade['流通市值'])
+
+    if max_chicang_liutong_trade and min_liutong_trade:
+        max_liutong_sunhao = max_chicang_liutong_trade['流通市值']*max_chicang_liutong_trade['bid1']/max_chicang_liutong_trade['now']
+        min_liutong_sunhao = min_liutong_trade['流通市值']*min_liutong_trade['ask1']/min_liutong_trade['now']
+        max_min_cha_suohao = str(round((max_liutong_sunhao/min_liutong_sunhao - 1)*100,2)) + '%'
+        max_min_cha = str(round((max_chicang_liutong_trade['流通市值']/min_liutong_trade['流通市值'] - 1)*100,2)) + '%'
+        print(max_min_cha_suohao,max_min_cha,max_chicang_liutong_trade['损耗'],min_liutong_trade['损耗'])
+
+#
+def tq_test():
+    
+    q = easyquotation.use('qq')
+
+    #取上市300天内的最小流通市值 top 40
+    dic,stock_list = gettimeToMarket()
+    #取得行情信息
+    stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 
     #最小流通市值取得
     min_liutong = min(stockinfo.items(), key=lambda d:d[1]['流通市值'])[1]
@@ -129,12 +160,12 @@ def gettimeToMarket():
     conn = sqlite3API.get_conn('stock.db')
     #sql_tid ="select code,timeToMarket from stock_info where code in ('" + "','".join(stock_list) + "')"
     sql_tid='''
-        select stock_info.code,stock_info.timeToMarket from liutong_info 
+        select stock_info.code,stock_info.timeToMarket from liutong_from_qq 
         inner join stock_info on
-        liutong_info.code = stock_info.code
-        where liutong_info.nmc<120000 and substr(liutong_info.code,1,1) != '3' 
-        and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days')
-        order by liutong_info.nmc 
+        liutong_from_qq.code = stock_info.code
+        where liutong_from_qq.liutong<13 and substr(liutong_from_qq.code,1,1) != '3' 
+        and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-270 days')
+        order by liutong_from_qq.liutong 
         limit 40;
         '''
     info_tid=sqlite3API.fetchmany(conn,sql_tid)
@@ -146,6 +177,44 @@ def gettimeToMarket():
     
     return dic,stock_list     
 
+#判断股票是否持仓
+def checkExistsCode(code):
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select code from chicang 
+        where code = '%s' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid % code)
+    if info_tid and len(info_tid)>0:
+        return True
+    else:
+        return False
+        
+#取得可用股份数
+def getKeyongGufen(code):
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select gufen_keyong from chicang 
+        where code = '%s' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid % code)
+    if info_tid and len(info_tid)>0:
+        return info_tid[0][0]
+    else:
+        return 0
+
+#取得持仓股中，流通市值最大的且可交易的股票
+def getMaxChicangLiutong(stockinfo,listCode):
+    dicMaxLiutong = dict()
+    liutong = 0.0
+    for code in listCode:
+        if getKeyongGufen(code)>0 and stockinfo[code]['流通市值']>liutong:
+            liutong = stockinfo[code]['流通市值']
+            dicMaxLiutong = stockinfo[code]
+    return dicMaxLiutong
+    
 def getCixinCode():
     conn = sqlite3API.get_conn('stock.db')
 
@@ -223,4 +292,4 @@ def getPositionAndBuyIPO():
 #        send_mail('[error] Position and IPO ',str(e))
 
 if __name__ == '__main__':
-    getPositionAndBuyIPO()
+    mulitTiaocang()
