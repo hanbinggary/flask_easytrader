@@ -40,36 +40,38 @@
 <table border='1'>
 <tr>
 <th>交易市场</th>
-<th>卖出冻结</th>
-<th>市价</th>
+<!--<th>卖出冻结</th>-->
+<!--<th>市价</th>-->
 <th>市值</th>
 <th>成本价</th>
 <th>参考盈亏</th>
-<th>当前持仓</th>
+<!--<th>当前持仓</th>-->
 <th>盈亏比例</th>
-<th>股份余额</th>
+<!--<th>股份余额</th>-->
 <th>股份可用</th>
 <th>代码</th>
 <th>名称</th>
-<th>卖出1/2</th>
-<!--<th>换仓1/2</th>-->
+<!--<th>卖出1/2</th>-->
+<th>delete</th>
 </tr>
 {% for kk in position %}
 <tr>
 <td>{{kk['交易市场']}}</td>
-<td>{{kk['卖出冻结']}}</td>
-<td>{{kk['参考市价']}}</td>
+<!--<td>{{kk['卖出冻结']}}</td>-->
+<!--<td>{{kk['参考市价']}}</td>-->
 <td>{{kk['参考市值']}}</td>
 <td>{{kk['参考成本价']}}</td>
 <td>{{kk['参考盈亏']}}</td>
-<td>{{kk['当前持仓']}}</td>
+<!--<td>{{kk['当前持仓']}}</td>-->
 <td>{{kk['盈亏比例(%)']}}</td>
-<td>{{kk['股份余额']}}</td>
+<!--<td>{{kk['股份余额']}}</td>-->
 <td>{{kk['股份可用']}}</td>
 <td>{{kk['证券代码']}}</td>
 <td>{{kk['证券名称']}}</td>
-<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>
-<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>-->
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>-->
+<td>            
+    <input type='button' id='btn2' value='delete' onclick="delChiyou('{{kk['证券代码']}}');">
+</td>
 </tr>
 {% endfor %}
 </table>
@@ -83,9 +85,29 @@
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
 getstockinfo();
-ref = setInterval(getstockinfo,34000);
+//ref = setInterval(getstockinfo,34000);
+
+function checkTradeTime(){
+	var myDate = new Date();
+	arr = ['9','10','11','13','14'];
+	for (var k = 0, length = arr.length; k < length; k++)
+	{
+		if (myDate.getHours()==arr[k])
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 function getstockinfo () {
+
+	var myDate = new Date();
+	if (checkTradeTime())
+	{
+		setTimeout(getstockinfo,34000);
+	}
+
 	$.ajax({
 		type: "GET",
 		url: "/qq/",
@@ -155,5 +177,35 @@ function sell(stockno,num,price){
 		});
 }
 
+//toChiyou
+function toChiyou(code,name){
+    $.ajax({
+		type: "POST",
+		url: "/toChiyou/",
+		data: {code:code,name:name},
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(){
+                $('#buy_info').text("toChiyou error");
+				return false;
+			},
+		});
+}
+//delChiyou
+function delChiyou(code){
+    $.ajax({
+		type: "POST",
+		url: "/delChiyou/",
+		data: {code:code},
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(msg){
+                $('#buy_info').text(msg);
+				return false;
+			},
+		});
+}
 
 </script>
