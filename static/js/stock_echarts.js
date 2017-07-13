@@ -36,14 +36,27 @@ function SetChart(result){
 		],
 		yAxis : [
 			{
+                       scale:true,
 				type : 'value'
 			}
 		],
 		series : [
 			{
-				"name":'series',
+				"name":'价格',
 				"type":"line",
-				"data":result.y
+				"data":result.y,
+                    markPoint: {
+                        data: [
+                            {type: 'max', name: '最大值'},
+                            {type: 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine: {
+                        data: [{
+        name: 'Y 轴值为 100 的水平线',
+        yAxis: 2101
+    }]
+                    }
 			}
 		]
 	};

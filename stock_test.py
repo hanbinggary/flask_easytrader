@@ -268,6 +268,27 @@ def insertTradeCal():
     df.to_sql('trade_calender',con=cnx,flavor='sqlite', if_exists='replace')
     print(df)
 
+def insertSqliteTest():
+    df = pd.DataFrame.from_csv('399006.csv')
+#    print(df[['ticker','dataDate']])
+    cnx = lite.connect('stock.db')
+    df.head(300).to_sql('t_399006',con=cnx,flavor='sqlite', if_exists='append')
+    print(df.head(3))
+
+def selectSqliteTest():
+    conn = sqlite3API.get_conn('stock.db')
+    sql_tid='select dataTime,lastPrice from t_399006 limit 100'
+   
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+    info_x = []
+    info_y = []
+    
+    for info in info_tid:
+        info_x.append(info[0])
+        info_y.append(info[1])
+    
+    print(info_x,info_y)
+    
 def getPositionAndBuyIPO():
     try:
         user = auto_trader.getUser()
@@ -292,4 +313,4 @@ def getPositionAndBuyIPO():
 #        send_mail('[error] Position and IPO ',str(e))
 
 if __name__ == '__main__':
-    mulitTiaocang()
+    insertSqliteTest()
