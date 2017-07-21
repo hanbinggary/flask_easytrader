@@ -241,6 +241,43 @@ def getAllPositionFromSqlite():
         list_dic.append(temp_item)
     return list_dic
 
+#取得华泰真实的持仓，非次新
+def getPositionHuatai():
+
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select * from position ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+    
+    dic = dict()
+
+    for info_temp in info_tid:
+        dic[info_temp[0]] = [info_temp[1],info_temp[2]]
+
+    return dic
+
+#插入华泰真实的持仓，非次新
+def insertPositionHuatai(data):
+
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        insert into position values(?,?);
+        '''
+    sqlite3API.save(conn,sql_tid,data)
+
+#删除华泰真实的持仓，非次新
+def delPositionHuatai(data):
+
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        delete from position where code=?;
+        '''
+    sqlite3API.save(conn,sql_tid,data)
+
 def getPositionFromYinhe():
     user = getUser()
     position = user.position

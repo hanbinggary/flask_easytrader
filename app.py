@@ -172,6 +172,66 @@ def getminline(stockno):
     
     return str({"x":info_x,"y":info_y})
     
+@app.route('/position/',methods=['GET'])
+def getPositionNew():
+    return render_template('position.html')
+
+@app.route('/positionhuatai/',methods=['GET'])
+def getPositionHuatai():
+    
+    dic_position = auto_trader.getPositionHuatai()
+    
+    q = easyquotation.use('qq')
+    stockinfo,stockinfo_zhangting = q.stocks(list(dic_position.keys()))
+    #合并
+    dictMerged=stockinfo.copy()
+    dictMerged.update(stockinfo_zhangting)
+    
+    #按流通市值排序
+    temp = sorted(dictMerged.items(), key=lambda d:d[1]['涨跌幅'])
+    
+    #总持仓市值
+    allPosition = 0.0
+    #总盈亏
+    allYingkui = 0.0
+    #今日盈亏
+    todayYingkui = 0.0
+    
+    for key,value in dictMerged.items():
+        try:
+            #股数
+            gushu = dic_position[key][0]
+            #成本价
+            chengben = dic_position[key][1]
+            #now
+            now = dictMerged[key]['now']
+            #持仓市值
+            chicang = round(gushu * dictMerged[key]['now'],2)
+            #盈亏
+            yingkui = round(gushu * dictMerged[key]['涨跌'],2)
+            
+            dictMerged[key]['股数']=gushu
+            dictMerged[key]['持仓市值']=chicang
+            dictMerged[key]['盈亏']=yingkui
+            dictMerged[key]['总盈亏']=round((now-chengben)*gushu,2)
+            dictMerged[key]['总盈亏(%)']=str(round((now/chengben-1)*100,2)) + '%'
+            allPosition += chicang
+            allYingkui += round((now-chengben)*gushu,2)
+            todayYingkui += yingkui
+            
+        except:
+            pass
+    #总盈亏(%)
+    allYingkui_1 = round(allYingkui/(allPosition-allYingkui)*100,2)
+    #今日盈亏(%)
+    todayYingkui_1 = round(todayYingkui/(allPosition-todayYingkui)*100,2)
+
+    return render_template('position_huatai.html', \
+                        stockinfo_sort=temp, \
+                        allPosition = allPosition, \
+                        allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
+                        todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))
+
 #批量取得最新行情 高频数据
 @app.route('/qq/')
 def getHangqingFromQQ():

@@ -65,6 +65,12 @@ class Tencent(BaseQuotation):
                 '最近逐笔成交': stock[29],  # 换成英文
                 'datetime': str(datetime.strptime(stock[30], '%Y%m%d%H%M%S'))[10:],
                 '涨跌': float(stock[31]),  # 换成英文
+                '股数': 0,  
+                '盈亏': 0.0,  
+                '总盈亏': 0.0,  
+                '总盈亏(%)': '',  
+                '持仓市值': 0.0,  
+                '涨跌幅': float(stock[32]),  # 换成英文
                 '涨跌(%)': str(float(stock[32])) + '%',  # 换成英文
                 '涨跌_css': 'font-red' if float(stock[32]) > 0.0 else 'font-green',  # 涨红跌绿
                 'high': float(stock[33]),

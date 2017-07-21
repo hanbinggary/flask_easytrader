@@ -1,0 +1,33 @@
+	.table-title{
+		background: #F5FFFA;
+	}
+	.double_row_bkcolor0{
+		background: #EAEAEA;
+	}
+	table{
+		border:1;
+		border-collapse:collapse;
+	}
+	table tr td{
+		text-align:right;
+	}
+	.font-red-bold{
+		color:red;
+		font-weight:bold;
+	}
+	.font-green-bold{
+		color:green;
+		font-weight:bold;
+	}
+	.font-bold{
+		font-weight:bold;
+	}
+	.font-red{
+		color:red;
+	}
+	.font-green{
+		color:green;
+	}
+	.font-blue{
+		color:blue;
+	}

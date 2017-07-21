@@ -1,0 +1,61 @@
+<!doctype html>
+<link rel="stylesheet" type="text/css" href="/static/css/common.css" />
+
+<dd>全部市值：{{allPosition}}
+<dd>全部盈亏：{{allYingkui}}
+<dd>今日盈亏：{{todayYingkui}}
+
+<p>持仓</p>
+  <table border='1' style='border-collapse:collapse'>
+  <tr class='table-title'>
+    <th>NO</th>
+    <th>代码</th>
+    <th>名称</th>
+    <th>持仓市值</th>
+    <th>盈亏</th>
+    <th>涨跌幅</th>
+    <th>涨跌</th>
+    <th>股数</th>
+    <th>现价</th>
+    <th>总盈亏</th>
+    <th>总盈亏(%)</th>
+    <th>成交额</th>
+    <th>PE</th>
+    <th>PB</th>
+    <th>time</th>
+    <!--<th>买入</th>-->
+    <th>删除</th>
+  </tr>
+  {% set i = 0 %}
+  {% set new_ipo_class = '' %}
+  {% for key,value in stockinfo_sort %}
+  {% set i=i+1 %}
+      <tr class='double_row_bkcolor{{i%2}}'>
+        <td>{{i}}</td>
+        <td><a href='/hangqing/{{value.code}}' target='_blank'>{{value.code}}</a></td>
+        <td align='justify'>{{value.name}}</td>
+        <td>{{value['持仓市值']}}</td>
+        <td class="{{value['涨跌_css']}}">{{value['盈亏']}}</td>
+        <td class="{{value['涨跌_css']}}">{{value['涨跌(%)']}}</td>
+        <td class="{{value['涨跌_css']}}">{{value['涨跌']}}</td>
+        <td>{{value['股数']}}</td>
+        <td>{{value.now}}</td>
+		{% if value['总盈亏'] > 0 %}
+			<td class='font-red'>{{value['总盈亏']}}</td>
+			<td class='font-red'>{{value['总盈亏(%)']}}</td>
+		{% else %}
+			<td class='font-green'>{{value['总盈亏']}}</td>
+			<td class='font-green'>{{value['总盈亏(%)']}}</td>
+		{% endif %}
+        <td>{{value['成交额']}}</td>
+        <td>{{value.PE}}</td>
+        <td>{{value.PB}}</td>
+        <td>{{value.datetime}}</td>
+        <!--<td><input type='button' id='btn1' value='买1手' onclick="buy('{{value.code}}',100,{{value.ask1}});"></td>-->
+        <td>            
+            <input type='button' id='btn2' value='DEL' onclick="del('{{value.code}}');">
+        </td>
+      </tr>
+  {% endfor %}
+
+</table>  
