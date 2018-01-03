@@ -107,7 +107,39 @@
   {% endfor %}
 
 </table>
-<br>  
+ 
+<p>历史持仓</p>
+  <table border='1' style='border-collapse:collapse'>
+  <tr class='table-title'>
+    <th>NO</th>
+    <th>代码</th>
+    <th>名称</th>
+    <th>卖出市值</th>
+    <th>总盈亏</th>
+    <th>总盈亏(%)</th>
+    <th>买入时间</th>
+    <th>卖出时间</th>
+  </tr>
+  {% for item in dic_position_history %}
+      <tr class='double_row_bkcolor{{loop.index%2}}'>
+        <td>{{loop.index}}</td>
+        <td><a href='https://xueqiu.com/S/{{item}}' target='_blank'>{{item}}</a></td>
+        <td align='justify'>{{dic_position_history[item]['name']}}</td>
+        <td>{{dic_position_history[item]['市值']}}</td>
+		{% if dic_position_history[item]['盈亏'] > 0 %}
+			<td class='font-red'>{{dic_position_history[item]['盈亏']}}</td>
+			<td class='font-red'>{{dic_position_history[item]['盈亏(%)']}}</td>
+		{% else %}
+			<td class='font-green'>{{dic_position_history[item]['盈亏']}}</td>
+			<td class='font-green'>{{dic_position_history[item]['盈亏(%)']}}</td>
+		{% endif %}
+        <td>{{dic_position_history[item]['start_time']}}</td>
+        <td>{{dic_position_history[item]['end_time']}}</td>
+      </tr>
+  {% endfor %}
+
+</table>
+<br> 
 <!--<div class="display-inline-block margin-left-20">-->
 <!--行业分类统计-->
 <table border='1' style='border-collapse:collapse'>

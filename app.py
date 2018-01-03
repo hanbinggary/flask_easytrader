@@ -180,6 +180,7 @@ def getPositionNew():
 def getPositionHuatai():
     
     dic_position = auto_trader.getPositionHuatai()
+    dic_position_history = auto_trader.getPositionHistory()
 
     q = easyquotation.use('qq')
     stockinfo,stockinfo_zhangting = q.fetch_stocks(list(dic_position.keys()))
@@ -207,6 +208,20 @@ def getPositionHuatai():
     dic_shichang_fenlei = dict()
     #行业分类合计
     dic_hangye_fenlei = dict()
+    #历史持仓统计
+    for key in dic_position_history.keys():
+        start_price = dic_position_history[key]['start_price']
+        end_price = dic_position_history[key]['end_price']
+        gushu = dic_position_history[key]['num']
+        dic_position_history[key]['盈亏']=round((end_price-start_price)*gushu,1)
+        dic_position_history[key]['盈亏(%)']=str(round((end_price/start_price-1)*100,2)) + '%'
+        dic_position_history[key]['市值']=round(end_price*gushu,0)
+        
+        #B股，港币的时候
+        if dic_position_history[key]['bizhong']=='HK' :
+            allYingkui += round((end_price-start_price)*gushu,2)*HKhuilv
+        else:
+            allYingkui += round((end_price-start_price)*gushu,2)
 
     for key,value in dictMerged.items():
         try:
@@ -282,6 +297,7 @@ def getPositionHuatai():
                         dic_shichang_fenlei=dic_shichang_fenlei, \
                         dic_hangye_fenlei=dic_hangye_fenlei, \
                         zhishuinfo = zhishuinfo, \
+                        dic_position_history = dic_position_history, \
                         allPosition = allPosition, \
                         allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
                         todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))

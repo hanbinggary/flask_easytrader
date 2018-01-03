@@ -258,6 +258,31 @@ def getPositionHuatai():
 
     return dic
 
+#取得历史持仓
+def getPositionHistory():
+
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select * from position_history ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+    
+    dic = dict()
+
+    for info_temp in info_tid:
+        dic[info_temp[0]] = [info_temp[1],info_temp[2],info_temp[3],info_temp[4],info_temp[5],info_temp[6]]
+        dic[info_temp[0]] = {
+            'name':info_temp[1],
+            'num':info_temp[2],
+            'start_price':info_temp[3],
+            'start_time':info_temp[4],
+            'end_price':info_temp[5],
+            'end_time':info_temp[6],
+            'bizhong':info_temp[7]
+        }
+    return dic
+
 #插入华泰真实的持仓，非次新
 def insertPositionHuatai(data):
 
