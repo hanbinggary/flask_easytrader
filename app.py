@@ -180,9 +180,14 @@ def getPositionNew():
 def getPositionHuatai():
     
     dic_position = auto_trader.getPositionHuatai()
-    
+
     q = easyquotation.use('qq')
-    stockinfo,stockinfo_zhangting = q.stocks(list(dic_position.keys()))
+    stockinfo,stockinfo_zhangting = q.fetch_stocks(list(dic_position.keys()))
+
+    #主要指数
+    zhishu_list = ['sh000001','sh000300','399006','399001']
+    zhishuinfo,zhishuinfo_zhangting = q.stocks(zhishu_list)
+#    print(zhishuinfo)
     #合并
     dictMerged=stockinfo.copy()
     dictMerged.update(stockinfo_zhangting)
@@ -196,13 +201,28 @@ def getPositionHuatai():
     allYingkui = 0.0
     #今日盈亏
     todayYingkui = 0.0
-    
+    #港股汇率
+    HKhuilv = 0.835
+    #分类合计
+    dic_shichang_fenlei = dict()
+    #行业分类合计
+    dic_hangye_fenlei = dict()
+
     for key,value in dictMerged.items():
         try:
+            key = getSZSHHK(key)
             #股数
             gushu = dic_position[key][0]
             #成本价
             chengben = dic_position[key][1]
+            #行业分类
+            hangye = dic_position[key][2]
+            #第一次买入时间
+            first_time = dic_position[key][3]
+            date1 = datetime.datetime.now()
+            date2 = datetime.datetime.strptime(first_time,'%Y/%m/%d')
+            delta  = (date1-date2)
+
             #now
             now = dictMerged[key]['now']
             #持仓市值
@@ -210,17 +230,48 @@ def getPositionHuatai():
             #盈亏
             yingkui = round(gushu * dictMerged[key]['涨跌'],2)
             
+            dictMerged[key]['行业']=hangye
+            dictMerged[key]['first_time']= str(int(delta.days/30))+' 个月'
+            dictMerged[key]['szsh']= getSZSHHK(key).replace('hk','')
             dictMerged[key]['股数']=gushu
             dictMerged[key]['持仓市值']=chicang
             dictMerged[key]['盈亏']=yingkui
             dictMerged[key]['总盈亏']=round((now-chengben)*gushu,2)
             dictMerged[key]['总盈亏(%)']=str(round((now/chengben-1)*100,2)) + '%'
-            allPosition += chicang
-            allYingkui += round((now-chengben)*gushu,2)
-            todayYingkui += yingkui
+
+            #B股，港币的时候
+            if dic_position[key][4]=='HK' :
+                allPosition += chicang*HKhuilv
+                allYingkui += round((now-chengben)*gushu,2)*HKhuilv
+                todayYingkui += yingkui*HKhuilv
+            else:
+                allPosition += chicang
+                allYingkui += round((now-chengben)*gushu,2)
+                todayYingkui += yingkui
+            #分类合计
+            fenlei=getShichang(key)
             
-        except:
+            if fenlei in dic_shichang_fenlei.keys():
+#                print(dic_shichang_fenlei[fenlei],fenlei)
+                dic_shichang_fenlei[fenlei] += chicang
+            else:
+#                print(fenlei)
+                dic_shichang_fenlei[fenlei] = chicang
+            #行业分类
+            if hangye in dic_hangye_fenlei.keys():
+                dic_hangye_fenlei[hangye] += chicang
+            else:
+                dic_hangye_fenlei[hangye] = chicang
+        except Exception as e:
+            print(e,'eeeee')
             pass
+    #分类合计
+    for item in dic_shichang_fenlei:
+        dic_shichang_fenlei[item] = [dic_shichang_fenlei[item],str(round(dic_shichang_fenlei[item]*100/allPosition,2))+'%']
+    #行业分类
+    for item in dic_hangye_fenlei:
+        dic_hangye_fenlei[item] = [dic_hangye_fenlei[item],str(round(dic_hangye_fenlei[item]*100/allPosition,2))+'%']
+#    print(dic_shichang_fenlei)
     #总盈亏(%)
     allYingkui_1 = round(allYingkui/(allPosition-allYingkui)*100,2)
     #今日盈亏(%)
@@ -228,6 +279,9 @@ def getPositionHuatai():
 
     return render_template('position_huatai.html', \
                         stockinfo_sort=temp, \
+                        dic_shichang_fenlei=dic_shichang_fenlei, \
+                        dic_hangye_fenlei=dic_hangye_fenlei, \
+                        zhishuinfo = zhishuinfo, \
                         allPosition = allPosition, \
                         allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
                         todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))
@@ -307,6 +361,32 @@ def gettimeToMarket():
     
     return dic,stock_list
 
+#取得股票类型（沪市，深市，B股，ETF基金）
+def getShichang(code):
+    if len(code)>6:
+        return code[:2]
+    elif code[:1]=='0':
+        return 'SZ'
+    elif code[:1]=='6':
+        return 'SH'
+    elif code[:1]=='2':
+        return 'B'
+    else:
+        return 'ETF'
+    
+#取得股票交易市场
+def getSZSHHK(code):
+    if len(code)==5:
+        return 'hk' + code
+    elif len(code)>6:
+        return code
+    elif code[:1] in ['0','1','2']:
+        return 'SZ'+code
+    elif code[:1] in ['5','6','9']:
+        return 'SH'+code
+    else:
+        return ''
+    
 if __name__ == '__main__':
     app.run(debug=True)
 

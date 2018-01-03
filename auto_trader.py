@@ -254,7 +254,7 @@ def getPositionHuatai():
     dic = dict()
 
     for info_temp in info_tid:
-        dic[info_temp[0]] = [info_temp[1],info_temp[2]]
+        dic[info_temp[0]] = [info_temp[1],info_temp[2],info_temp[3],info_temp[4],info_temp[5]]
 
     return dic
 

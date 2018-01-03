@@ -10,6 +10,13 @@ class Tencent(BaseQuotation):
     stock_api = 'http://qt.gtimg.cn/q='
     grep_stock_code = re.compile(r'(?<=_)\w+')
     max_num = 60
+    
+    def isFloat(self,value):
+        try:
+            float(value)
+            return True
+        except:
+            return False
 
     def format_response_data(self, rep_data, prefix=False):
         stocks_detail = ''.join(rep_data)
@@ -22,7 +29,8 @@ class Tencent(BaseQuotation):
             if len(stock) <= 49:
                 continue
             stock_code = self.grep_stock_code.search(stock[0]).group() if prefix else stock[2]
-
+            if len(stock_code) ==5: 
+                stock_code = 'hk'+stock_code
             #css设定用
             #损耗大于0.2%时，标红
             sunhao = round((float(stock[19])/float(stock[9])-1)*100,2) if float(stock[9]) > 0.0 else 0.0
@@ -63,24 +71,24 @@ class Tencent(BaseQuotation):
                 '损耗': str(sunhao) + '%',
                 'sunhao_css': sunhao_css,
                 '最近逐笔成交': stock[29],  # 换成英文
-                'datetime': str(datetime.strptime(stock[30], '%Y%m%d%H%M%S'))[10:],
+                'datetime': str(datetime.strptime(stock[30], '%Y%m%d%H%M%S'))[10:] if len(stock[30]) == 14 else stock[30][11:],
                 '涨跌': float(stock[31]),  # 换成英文
-                '股数': 0,  
-                '盈亏': 0.0,  
-                '总盈亏': 0.0,  
-                '总盈亏(%)': '',  
-                '持仓市值': 0.0,  
+#                '股数': 0,  
+#                '盈亏': 0.0,  
+#                '总盈亏': 0.0,  
+#                '总盈亏(%)': '',  
+#                '持仓市值': 0.0,  
                 '涨跌幅': float(stock[32]),  # 换成英文
                 '涨跌(%)': str(float(stock[32])) + '%',  # 换成英文
                 '涨跌_css': 'font-red' if float(stock[32]) > 0.0 else 'font-green',  # 涨红跌绿
                 'high': float(stock[33]),
                 'low': float(stock[34]),
                 '价格/成交量(手)/成交额': stock[35],  # 换成英文
-                '成交量(手)': int(stock[36]) * 100,  # 换成英文
+#                '成交量(手)': int(stock[36]) * 100,  # 换成英文
                 '成交额': float(stock[37]),  # 成交额(万)
-                'turnover': float(stock[38]) if stock[38] != '' else None,
+#                'turnover': float(stock[38]) if stock[38] != '' else None,
                 'PE': float(stock[39]) if stock[39] != '' else None,
-                'unknown': stock[40],
+#                'unknown': stock[40],
                 'high_2': float(stock[41]),  # 意义不明
                 'low_2': float(stock[42]),  # 意义不明
                 '振幅': float(stock[43]),  # 换成英文
@@ -94,7 +102,7 @@ class Tencent(BaseQuotation):
                 'bid1_num': round(float(stock[9])*int(stock[10])/100,2),  # 买一委托额(万)
                 'bid1_num_css': 'font-red' if round(float(stock[9])*int(stock[10])/100,2) <=1 else '',  # 买一委托额(万)css
                 '总市值': float(stock[45]) if stock[44] != '' else None,  # 换成英文
-                'PB': float(stock[46]),
+                'PB': float(stock[46]) if self.isFloat(stock[46]) else 0,
                 '涨停价': float(stock[47]),  # 换成英文
                 '跌停价': float(stock[48])  # 换成英文
             }
