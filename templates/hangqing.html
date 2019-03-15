@@ -1,0 +1,40 @@
+<!doctype html>
+<title>hangqing</title>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<input type='text' id='hidstockno' style="display:none" value='{{stockno}}'>
+<!--<input type="button" value="GO!" onclick='getstockinfo("0");'>-->
+<div id='stock_info'></div>
+<script type="text/javascript">
+	getstockinfo($("#hidstockno").val());
+
+	function checkTradeTime(){
+		var myDate = new Date();
+		arr = ['9','10','11','13','14'];
+		for (var k = 0, length = arr.length; k < length; k++)
+		{
+			if (myDate.getHours()==arr[k])
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function getstockinfo (stockno) {
+		stockno=$("#hidstockno").val();
+		if (checkTradeTime())
+		{
+			setTimeout(function(){getstockinfo(stockno);},10000);
+		}
+		$.ajax({
+			type: "GET",
+			url: "/hangqingsub/" + stockno,
+			success: function(msg){
+					$('#stock_info').html(msg);
+			},
+			error:function(){
+					$('#stock_info').html("error");
+				},
+			})
+	}
+</script>

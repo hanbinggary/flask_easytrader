@@ -33,6 +33,7 @@
     <th>now</th>
     <th>涨跌</th>
     <th>涨跌%</th>
+    <th>成交额</th>
   </tr>
 {% for item in zhishuinfo %}
   <tr class='double_row_bkcolor{{loop.index%2}}'>
@@ -41,10 +42,12 @@
 			<td class='font-red'>{{zhishuinfo[item]['now']}}</td>
 			<td class='font-red'>{{zhishuinfo[item]['涨跌']}}</td>
 			<td class='font-red'>{{zhishuinfo[item]['涨跌(%)']}}</td>
+			<td class='font-red'>{{zhishuinfo[item]['成交额']}}</td>
 		{% else %}
 			<td class='font-green'>{{zhishuinfo[item]['now']}}</td>
 			<td class='font-green'>{{zhishuinfo[item]['涨跌']}}</td>
 			<td class='font-green'>{{zhishuinfo[item]['涨跌(%)']}}</td>
+			<td class='font-green'>{{zhishuinfo[item]['成交额']}}</td>
 		{% endif %}
   </tr>
 {% endfor %}

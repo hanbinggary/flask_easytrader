@@ -77,13 +77,18 @@ def hangqing(stockno):
         
 @app.route('/hangqingsub/<stockno>',methods=['GET'])
 def hangqingsub(stockno):
-    proxies = {
-        'http':'http://1:1@10.88.42.18:8080',
-        'https':'http://1:1@10.88.42.18:8080' 
-    }
-    url='https://app.leverfun.com/timelyInfo/timelyOrderForm?stockCode=%s' % stockno
-    html = requests.get(url,proxies=proxies)
-    return html.text
+#    proxies = {
+#        'http':'http://1:1@10.88.42.18:8080',
+#        'https':'http://1:1@10.88.42.18:8080' 
+#    }
+    q = easyquotation.use('qq')
+    stockinfo,stockinfo_zhangting = q.stocks(stockno)
+#    url='https://app.leverfun.com/timelyInfo/timelyOrderForm?stockCode=%s' % stockno
+#    html = requests.get(url,proxies=proxies)
+    if len(stockinfo)>0:
+        print (list(stockinfo.keys())[0])
+#    return html.text
+    return render_template('hangqing_sub.html', stockinfo=stockinfo[list(stockinfo.keys())[0]])
 
 def getUser():
     user = easytrader.use('yh')
@@ -188,7 +193,7 @@ def getPositionHuatai():
     #主要指数
     zhishu_list = ['sh000001','sh000300','399006','399001']
     zhishuinfo,zhishuinfo_zhangting = q.stocks(zhishu_list)
-#    print(zhishuinfo)
+    #print(zhishuinfo)
     #合并
     dictMerged=stockinfo.copy()
     dictMerged.update(stockinfo_zhangting)
@@ -203,7 +208,7 @@ def getPositionHuatai():
     #今日盈亏
     todayYingkui = 0.0
     #港股汇率
-    HKhuilv = 0.835
+    HKhuilv = 0.803
     #分类合计
     dic_shichang_fenlei = dict()
     #行业分类合计
@@ -268,15 +273,15 @@ def getPositionHuatai():
             
             if fenlei in dic_shichang_fenlei.keys():
 #                print(dic_shichang_fenlei[fenlei],fenlei)
-                dic_shichang_fenlei[fenlei] += chicang
+                dic_shichang_fenlei[fenlei] += chicang if dic_position[key][4]=='RMB' else round(chicang * HKhuilv,1)
             else:
 #                print(fenlei)
-                dic_shichang_fenlei[fenlei] = chicang
+                dic_shichang_fenlei[fenlei] = chicang if dic_position[key][4]=='RMB' else round(chicang * HKhuilv,1)
             #行业分类
             if hangye in dic_hangye_fenlei.keys():
-                dic_hangye_fenlei[hangye] += chicang
+                dic_hangye_fenlei[hangye] += chicang if dic_position[key][4]=='RMB' else round(chicang * HKhuilv,1)
             else:
-                dic_hangye_fenlei[hangye] = chicang
+                dic_hangye_fenlei[hangye] = chicang if dic_position[key][4]=='RMB' else round(chicang * HKhuilv,1)
         except Exception as e:
             print(e,'eeeee')
             pass
