@@ -59,21 +59,22 @@ def buy():
 @app.route('/hangqing/<stockno>',methods=['GET'])
 def hangqing(stockno):
     
-    sz_sh = 'sz'
-    if (stockno[:1]=='6' or stockno[:1]=='5'):
-        sz_sh = 'sh'
-        
-    url = 'http://qt.gtimg.cn/q=%s' % (sz_sh + stockno)
-    proxies = {
-        'http':'http://1:1@10.88.42.18:8080',
-        'https':'http://1:1@10.88.42.18:8080' 
-    }
-    html = requests.get(url,proxies=proxies)
-    stock = html.text.split('~')
-    stockname = ''
-    if (len(stock) > 1):
-        stockname = stock[1]
-    return render_template('stock.html', stockno=stockno,stockname = stockname )
+#    sz_sh = 'sz'
+#    if (stockno[:1]=='6' or stockno[:1]=='5'):
+#        sz_sh = 'sh'
+#        
+#    url = 'http://qt.gtimg.cn/q=%s' % (sz_sh + stockno)
+#    proxies = {
+#        'http':'http://1:1@10.88.42.18:8080',
+#        'https':'http://1:1@10.88.42.18:8080' 
+#    }
+#    html = requests.get(url,proxies=proxies)
+#    stock = html.text.split('~')
+#    stockname = ''
+#    if (len(stock) > 1):
+#        stockname = stock[1]
+#    return render_template('stock.html', stockno=stockno,stockname = stockname )
+    return render_template('hangqing.html', stockno=stockno)
         
 @app.route('/hangqingsub/<stockno>',methods=['GET'])
 def hangqingsub(stockno):
