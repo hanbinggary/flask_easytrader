@@ -321,6 +321,7 @@ def getPositionCommon(flag):
                             allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
                             todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))
     else:
+        template = 'position_public_sub.html'
         return render_template(template, \
                             stockinfo_sort=temp, \
                             #dic_shichang_fenlei=dic_shichang_fenlei, \
