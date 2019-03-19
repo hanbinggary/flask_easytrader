@@ -182,8 +182,19 @@ def getminline(stockno):
 def getPositionNew():
     return render_template('position.html')
 
+@app.route('/pp/',methods=['GET'])
+def getPositionPublic():
+    return render_template('position_public.html')
+
 @app.route('/positionhuatai/',methods=['GET'])
 def getPositionHuatai():
+    return getPositionCommon(0)
+
+@app.route('/public_sub/',methods=['GET'])
+def getPositionPublicSub():
+    return getPositionCommon(1)
+    
+def getPositionCommon(flag):
     
     dic_position = auto_trader.getPositionHuatai()
     dic_position_history = auto_trader.getPositionHistory()
@@ -298,15 +309,27 @@ def getPositionHuatai():
     #今日盈亏(%)
     todayYingkui_1 = round(todayYingkui/(allPosition-todayYingkui)*100,2)
 
-    return render_template('position_huatai.html', \
-                        stockinfo_sort=temp, \
-                        dic_shichang_fenlei=dic_shichang_fenlei, \
-                        dic_hangye_fenlei=dic_hangye_fenlei, \
-                        zhishuinfo = zhishuinfo, \
-                        dic_position_history = dic_position_history, \
-                        allPosition = allPosition, \
-                        allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
-                        todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))
+    if flag == 0:
+        template = 'position_huatai.html'
+        return render_template(template, \
+                            stockinfo_sort=temp, \
+                            dic_shichang_fenlei=dic_shichang_fenlei, \
+                            dic_hangye_fenlei=dic_hangye_fenlei, \
+                            zhishuinfo = zhishuinfo, \
+                            dic_position_history = dic_position_history, \
+                            allPosition = allPosition, \
+                            allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
+                            todayYingkui = '%s (%s)' % (str(todayYingkui),str(todayYingkui_1)+'%'))
+    else:
+        return render_template(template, \
+                            stockinfo_sort=temp, \
+                            #dic_shichang_fenlei=dic_shichang_fenlei, \
+                            #dic_hangye_fenlei=dic_hangye_fenlei, \
+                            zhishuinfo = zhishuinfo, \
+#                            dic_position_history = dic_position_history, \
+                            allPosition = allPosition, \
+#                            allYingkui = '%s (%s)' % (str(allYingkui),str(allYingkui_1)+'%'), \
+                            todayYingkui = str(todayYingkui_1)+'%')
 
 #批量取得最新行情 高频数据
 @app.route('/qq/')
